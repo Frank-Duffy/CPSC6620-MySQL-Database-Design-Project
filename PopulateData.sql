@@ -1,4 +1,4 @@
-USE Part2;
+USE Pizzeria;
 
 INSERT INTO topping VALUES
 (1,"Pepperoni",1.25,0.2,100,50,2,2.75,3.5,4.5),

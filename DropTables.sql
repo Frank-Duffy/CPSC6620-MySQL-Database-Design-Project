@@ -1,4 +1,4 @@
-Use Part2;
+USE Pizzeria;
 
 DROP TABLE pickup;
 DROP TABLE dinein;

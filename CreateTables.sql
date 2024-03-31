@@ -1,5 +1,5 @@
-CREATE schema Pizzeria;
--- USE Pizzeria;
+-- CREATE schema Pizzeria;
+USE Pizzeria;
 
 
 CREATE TABLE pizzabase(
