@@ -31,6 +31,8 @@ CREATE TABLE customer(
     CustomerCity	VARCHAR(255),
     CustomerState	VARCHAR(255),
     CustomerZip	INT
+    CustomerZip	INT,
+    CustomerPhone VARCHAR(12)
 );
 CREATE TABLE pickup(
 	PickUpOrderNum	INT PRIMARY KEY,
