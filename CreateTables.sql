@@ -90,12 +90,11 @@ CREATE TABLE topping(
     ToppingQOH      DECIMAL(5,2)    NOT NULL
 );
 CREATE TABLE pizzatopping(
-	PizzaToppingPizzaNum	INT	NOT NULL,
-    FOREIGN KEY (PizzaToppingPizzaNum) REFERENCES	pizza(PizzaNum),
-    PizzaToppingToppingNum	INT	NOT NULL,
-    FOREIGN KEY (PizzaToppingToppingNum) REFERENCES topping(ToppingNum),
-    PizzaToppingHasDouble	BOOLEAN	NOT NULL,
-    PRIMARY KEY (PizzaToppingPizzaNum, PizzaToppingToppingNum)
+	PizzaNum	INT	NOT NULL,
+    ToppingNum	INT	NOT NULL,
+    PizzaToppingHasDouble BOOLEAN NOT NULL DEFAULT 0;
+    FOREIGN KEY (PizzaNum) REFERENCES	pizza(PizzaNum),
+    FOREIGN KEY (ToppingNum) REFERENCES topping(ToppingNum),
+    PRIMARY KEY (PizzaNum, ToppingNum)
 );
-
 COMMIT;
