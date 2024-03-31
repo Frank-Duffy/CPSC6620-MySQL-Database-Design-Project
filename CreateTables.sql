@@ -4,7 +4,7 @@ USE Part2;
 
 CREATE TABLE pizzabase(
 	PizzaBaseNum	INT	PRIMARY KEY AUTO_INCREMENT,
-	PizzaBaseSize	VARCHAR(20)	NOT NULL,
+	PizzaBaseSize	VARCHAR(8)	NOT NULL,
 	PizzaBaseCrust	VARCHAR(20)	NOT NULL,
 	PizzaBasePrice	DECIMAL(10,2)	NOT NULL,
 	PizzaBaseCost	DECIMAL(10,2)	NOT NULL
