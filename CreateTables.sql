@@ -34,10 +34,10 @@ CREATE TABLE customer(
     CustomerPhone 	VARCHAR(12)
 );
 CREATE TABLE pickup(
-	PickUpOrderNum	INT PRIMARY KEY,
-    FOREIGN KEY (PickUpOrderNum) REFERENCES pizzaorder(PizzaOrderNum),
-    PickUpCustomerNum	INT	NOT NULL,
-    FOREIGN KEY (PickUpCustomerNum) REFERENCES customer(CustomerNum)
+	PizzaOrderNum	INT PRIMARY KEY,
+    CustomerID	INT	NOT NULL,
+    FOREIGN KEY (PizzaOrderNum) REFERENCES pizzaorder(PizzaOrderNum),
+    FOREIGN KEY (CustomerID) REFERENCES customer(CustomerID)
 );
 CREATE TABLE delivery(
 	DeliveryOrderNum	INT PRIMARY KEY,
