@@ -6,8 +6,8 @@ CREATE TABLE pizzabase(
 	PizzaBaseNum	INT	PRIMARY KEY AUTO_INCREMENT,
 	PizzaBaseSize	VARCHAR(8)	NOT NULL,
 	PizzaBaseCrust	VARCHAR(11)	NOT NULL,
-	PizzaBasePrice	DECIMAL(10,2)	NOT NULL,
-	PizzaBaseCost	DECIMAL(10,2)	NOT NULL
+	PizzaBasePrice	DECIMAL(4,2)	NOT NULL,
+	PizzaBaseCost	DECIMAL(4,2)	NOT NULL
 );
 
 CREATE TABLE pizzaorder(
