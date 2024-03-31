@@ -63,12 +63,12 @@ CREATE TABLE discount(
     DiscountType	CHAR(1)
     DiscountAmt	    DECIMAL(4,2)
 );
-CREATE TABLE discount(
-	DiscountOrderNum INT NOT NULL,
-    FOREIGN KEY (DiscountOrderNum) REFERENCES pizzaorder(PizzaOrderNum),
-    DiscountDiscountNum INT,
-    FOREIGN KEY (DiscountDiscountNum) REFERENCES discountbase(DiscountBaseNum),
-    PRIMARY KEY (DiscountOrderNum, DiscountDiscountNum)
+CREATE TABLE orderdiscount(
+	PizzaOrderNum INT NOT NULL,
+    DiscountNum INT NOT NULL,
+    FOREIGN KEY (PizzaOrderNum) REFERENCES pizzaorder(PizzaOrderNum),
+    FOREIGN KEY (DiscountNum) REFERENCES discount(DiscountNum),
+    PRIMARY KEY (PizzaOrderNum, DiscountNum)
 );
 CREATE TABLE topping(
 	ToppingNum INT PRIMARY KEY AUTO_INCREMENT,
