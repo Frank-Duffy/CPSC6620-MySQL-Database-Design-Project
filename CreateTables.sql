@@ -7,7 +7,7 @@ CREATE TABLE pizzabase(
 	PizzaBaseSize	VARCHAR(20)	NOT NULL,
 	PizzaBaseCrust	VARCHAR(20)	NOT NULL,
 	PizzaBasePrice	DECIMAL(10,2)	NOT NULL,
-	PizzaBaseConst	DECIMAL(10,2)	NOT NULL
+	PizzaBaseCost	DECIMAL(10,2)	NOT NULL
 );
 
 CREATE TABLE pizzaorder(
