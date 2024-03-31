@@ -24,7 +24,7 @@ CREATE TABLE dinein(
     DineInTableNum	INT	NOT NULL
 );
 CREATE TABLE customer(
-	CustomerNum	INT	PRIMARY KEY AUTO_INCREMENT,
+	CustomerID	INT	PRIMARY KEY AUTO_INCREMENT,
     CustomerFName	VARCHAR(255)	NOT NULL,
     CustomerLName	VARCHAR(255)	NOT NULL,
     CustomerStreet	VARCHAR(255),
