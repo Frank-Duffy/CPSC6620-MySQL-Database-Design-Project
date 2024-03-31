@@ -52,7 +52,7 @@ CREATE TABLE pizza(
     PizzaBaseNum    INT NOT NULL,
 	PizzaPrice	    DECIMAL(4,2) NOT NULL,
 	PizzaCost	    DECIMAL(4,2) NOT NULL,
-	PizzaIsComplete BOOLEAN NOT NULL,
+	PizzaIsComplete BOOLEAN NOT NULL DEFAULT 0,
     FOREIGN KEY (PizzaOrderNum) REFERENCES pizzaorder(PizzaOrderNum),
     FOREIGN KEY (PizzaBaseNum) REFERENCES pizzabase(PizzaBaseNum)
 
