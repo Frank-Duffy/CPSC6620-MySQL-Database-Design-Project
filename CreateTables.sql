@@ -40,10 +40,10 @@ CREATE TABLE pickup(
     FOREIGN KEY (CustomerID) REFERENCES customer(CustomerID)
 );
 CREATE TABLE delivery(
-	DeliveryOrderNum	INT PRIMARY KEY,
-    FOREIGN KEY (DeliveryOrderNum) REFERENCES pizzaorder(PizzaOrderNum),
-	DeliveryCustomerNum	INT	NOT NULL,
-    FOREIGN KEY (DeliveryCustomerNum) REFERENCES customer(CustomerNum)
+	PizzaOrderNum	INT PRIMARY KEY,
+    CustomerID	INT	NOT NULL,
+    FOREIGN KEY (PizzaOrderNum) REFERENCES pizzaorder(PizzaOrderNum),
+    FOREIGN KEY (CustomerID) REFERENCES customer(CustomerID)
 );
 
 CREATE TABLE pizza(
