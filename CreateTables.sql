@@ -92,7 +92,7 @@ CREATE TABLE topping(
 CREATE TABLE pizzatopping(
 	PizzaNum	INT	NOT NULL,
     ToppingNum	INT	NOT NULL,
-    PizzaToppingHasDouble BOOLEAN NOT NULL DEFAULT 0;
+    PizzaToppingHasDouble BOOLEAN NOT NULL DEFAULT 0,
     FOREIGN KEY (PizzaNum) REFERENCES	pizza(PizzaNum),
     FOREIGN KEY (ToppingNum) REFERENCES topping(ToppingNum),
     PRIMARY KEY (PizzaNum, ToppingNum)
