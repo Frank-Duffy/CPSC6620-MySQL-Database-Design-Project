@@ -19,8 +19,8 @@ CREATE TABLE pizzaorder(
     PizzaOrderType VARCHAR(7)	NOT NULL
 );
 CREATE TABLE dinein(
-	DineInOrderNum	INT PRIMARY KEY,
-    FOREIGN KEY (DineInOrderNum) REFERENCES pizzaorder(PizzaOrderNum),
+	PizzaOrderNum	INT PRIMARY KEY,
+    FOREIGN KEY (PizzaOrderNum) REFERENCES pizzaorder(PizzaOrderNum),
     DineInTableNum	INT	NOT NULL
 );
 CREATE TABLE customer(
