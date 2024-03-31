@@ -78,16 +78,16 @@ CREATE TABLE pizzadiscount(
     PRIMARY KEY (PizzaNum, DiscountNum)
 );
 CREATE TABLE topping(
-	ToppingNum INT PRIMARY KEY AUTO_INCREMENT,
-    ToppingName VARCHAR(255)	NOT NULL	UNIQUE,
-    ToppingPrice DECIMAL(10,2)	NOT NULL,
-    ToppingCost	DECIMAL(10,2)	NOT NULL,
-    ToppingAmt	INT	NOT NULL,
-    ToppingMinQty	INT	NOT NULL,
-    ToppingSmall	DECIMAL(10,2)	NOT NULL,
-    ToppingMedium	DECIMAL(10,2)	NOT NULL,
-    ToppingLarge	DECIMAL(10,2)	NOT NULL,
-    ToppingXLarge	DECIMAL(10,2)	NOT NULL
+	ToppingNum      INT PRIMARY KEY AUTO_INCREMENT,
+    ToppingName     VARCHAR(255)    NOT NULL	UNIQUE,
+    ToppingPrice    DECIMAL(4,2)	NOT NULL,
+    ToppingCost	    DECIMAL(4,2)	NOT NULL,
+    ToppingPersonal	DECIMAL(3,2)	NOT NULL,
+    ToppingMedium	DECIMAL(3,2)	NOT NULL,
+    ToppingLarge	DECIMAL(3,2)	NOT NULL,
+    ToppingXLarge	DECIMAL(3,2)	NOT NULL,
+    ToppingMinQOH   DECIMAL(5,2)    NOT NULL,
+    ToppingQOH      DECIMAL(5,2)    NOT NULL
 );
 CREATE TABLE pizzatopping(
 	PizzaToppingPizzaNum	INT	NOT NULL,
