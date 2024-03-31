@@ -60,7 +60,7 @@ CREATE TABLE pizza(
 CREATE TABLE discount(
 	DiscountNum	    INT	PRIMARY KEY AUTO_INCREMENT,
     DiscountName	VARCHAR(255) NOT NULL UNIQUE,
-    DiscountType	CHAR(1)
+    DiscountType	CHAR(1),
     DiscountAmt	    DECIMAL(4,2)
 );
 CREATE TABLE orderdiscount(
