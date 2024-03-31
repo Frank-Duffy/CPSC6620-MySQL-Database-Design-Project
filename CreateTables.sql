@@ -12,11 +12,11 @@ CREATE TABLE pizzabase(
 
 CREATE TABLE pizzaorder(
 	PizzaOrderNum	INT	PRIMARY KEY NOT NULL,
-    PizzaOrderPrice	DECIMAL(10,2)	NOT NULL,
-    PizzaOrderCost	DECIMAL(10,2)	NOT NULL,
+    PizzaOrderPrice	DECIMAL(4,2)	NOT NULL,
+    PizzaOrderCost	DECIMAL(4,2)	NOT NULL,
     PizzaOrderDate	DATE	NOT NULL,
     PizzaOrderComplete	BOOL	NOT NULL,
-    PizzaOrderType VARCHAR(10)	NOT NULL
+    PizzaOrderType VARCHAR(7)	NOT NULL
 );
 CREATE TABLE dinein(
 	DineInOrderNum	INT PRIMARY KEY NOT NULL,
