@@ -19,7 +19,7 @@ CREATE TABLE pizzaorder(
     PizzaOrderType VARCHAR(7)	NOT NULL
 );
 CREATE TABLE dinein(
-	DineInOrderNum	INT PRIMARY KEY NOT NULL,
+	DineInOrderNum	INT PRIMARY KEY,
     FOREIGN KEY (DineInOrderNum) REFERENCES pizzaorder(PizzaOrderNum),
     DineInTableNum	INT	NOT NULL
 );
@@ -33,13 +33,13 @@ CREATE TABLE customer(
     CustomerZip	INT
 );
 CREATE TABLE pickup(
-	PickUpOrderNum	INT PRIMARY KEY NOT NULL,
+	PickUpOrderNum	INT PRIMARY KEY,
     FOREIGN KEY (PickUpOrderNum) REFERENCES pizzaorder(PizzaOrderNum),
     PickUpCustomerNum	INT	NOT NULL,
     FOREIGN KEY (PickUpCustomerNum) REFERENCES customer(CustomerNum)
 );
 CREATE TABLE delivery(
-	DeliveryOrderNum	INT PRIMARY KEY NOT NULL,
+	DeliveryOrderNum	INT PRIMARY KEY,
     FOREIGN KEY (DeliveryOrderNum) REFERENCES pizzaorder(PizzaOrderNum),
 	DeliveryCustomerNum	INT	NOT NULL,
     FOREIGN KEY (DeliveryCustomerNum) REFERENCES customer(CustomerNum)
