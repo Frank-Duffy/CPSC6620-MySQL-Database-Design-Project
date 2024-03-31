@@ -15,7 +15,7 @@ CREATE TABLE pizzaorder(
     PizzaOrderPrice	DECIMAL(4,2)	NOT NULL,
     PizzaOrderCost	DECIMAL(4,2)	NOT NULL,
     PizzaOrderDate	DATE	NOT NULL,
-    PizzaOrderComplete	BOOL	NOT NULL,
+    PizzaOrderComplete	BOOLEAN	NOT NULL,
     PizzaOrderType VARCHAR(7)	NOT NULL
 );
 CREATE TABLE dinein(
@@ -47,12 +47,15 @@ CREATE TABLE delivery(
 );
 
 CREATE TABLE pizza(
-	PizzaNum	INT	PRIMARY KEY AUTO_INCREMENT,
+	PizzaNum	    INT	PRIMARY KEY AUTO_INCREMENT,
 	PizzaOrderNum	INT	NOT NULL,
-	FOREIGN KEY (PizzaOrderNum) REFERENCES pizzaorder(PizzaOrderNum),
-	PizzaPrice	DECIMAL(10,2)	NOT NULL,
-	PizzaCost	DECIMAL(10,2)	NOT NULL,
-	PizzaIsComplete BOOL NOT NULL
+    PizzaBaseNum    INT NOT NULL,
+	PizzaPrice	    DECIMAL(4,2) NOT NULL,
+	PizzaCost	    DECIMAL(4,2) NOT NULL,
+	PizzaIsComplete BOOLEAN NOT NULL,
+    FOREIGN KEY (PizzaOrderNum) REFERENCES pizzaorder(PizzaOrderNum),
+    FOREIGN KEY (PizzaBaseNum) REFERENCES pizzabase(PizzaBaseNum)
+
 );
 
 CREATE TABLE discountbase(
@@ -87,7 +90,7 @@ CREATE TABLE pizzatopping(
     FOREIGN KEY (PizzaToppingPizzaNum) REFERENCES	pizza(PizzaNum),
     PizzaToppingToppingNum	INT	NOT NULL,
     FOREIGN KEY (PizzaToppingToppingNum) REFERENCES topping(ToppingNum),
-    PizzaToppingHasDouble	BOOL	NOT NULL,
+    PizzaToppingHasDouble	BOOLEAN	NOT NULL,
     PRIMARY KEY (PizzaToppingPizzaNum, PizzaToppingToppingNum)
 );
 
