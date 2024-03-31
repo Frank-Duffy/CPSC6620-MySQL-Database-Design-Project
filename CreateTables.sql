@@ -57,14 +57,12 @@ CREATE TABLE pizza(
     FOREIGN KEY (PizzaBaseNum) REFERENCES pizzabase(PizzaBaseNum)
 
 );
-
-CREATE TABLE discountbase(
-	DiscountBaseNum	INT	PRIMARY KEY AUTO_INCREMENT,
-    DiscountBaseName	VARCHAR(255)	NOT NULL	UNIQUE,
-    DiscountBasePercent	INT,
-    DiscountBaseAmt	DECIMAL(10,2)
+CREATE TABLE discount(
+	DiscountNum	    INT	PRIMARY KEY AUTO_INCREMENT,
+    DiscountName	VARCHAR(255) NOT NULL UNIQUE,
+    DiscountType	CHAR(1)
+    DiscountAmt	    DECIMAL(4,2)
 );
-
 CREATE TABLE discount(
 	DiscountOrderNum INT NOT NULL,
     FOREIGN KEY (DiscountOrderNum) REFERENCES pizzaorder(PizzaOrderNum),
@@ -72,7 +70,6 @@ CREATE TABLE discount(
     FOREIGN KEY (DiscountDiscountNum) REFERENCES discountbase(DiscountBaseNum),
     PRIMARY KEY (DiscountOrderNum, DiscountDiscountNum)
 );
-
 CREATE TABLE topping(
 	ToppingNum INT PRIMARY KEY AUTO_INCREMENT,
     ToppingName VARCHAR(255)	NOT NULL	UNIQUE,
