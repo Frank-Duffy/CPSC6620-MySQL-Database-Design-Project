@@ -70,6 +70,13 @@ CREATE TABLE orderdiscount(
     FOREIGN KEY (DiscountNum) REFERENCES discount(DiscountNum),
     PRIMARY KEY (PizzaOrderNum, DiscountNum)
 );
+CREATE TABLE pizzadiscount(
+	PizzaNum INT NOT NULL,
+    DiscountNum INT NOT NULL,
+    FOREIGN KEY (PizzaNum) REFERENCES pizza(PizzaNum),
+    FOREIGN KEY (DiscountNum) REFERENCES discount(DiscountNum),
+    PRIMARY KEY (PizzaNum, DiscountNum)
+);
 CREATE TABLE topping(
 	ToppingNum INT PRIMARY KEY AUTO_INCREMENT,
     ToppingName VARCHAR(255)	NOT NULL	UNIQUE,
