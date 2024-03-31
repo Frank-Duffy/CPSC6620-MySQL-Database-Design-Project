@@ -11,7 +11,7 @@ CREATE TABLE pizzabase(
 );
 
 CREATE TABLE pizzaorder(
-	PizzaOrderNum	INT	PRIMARY KEY NOT NULL,
+	PizzaOrderNum	INT	PRIMARY KEY AUTO_INCREMENT,
     PizzaOrderPrice	DECIMAL(4,2)	NOT NULL,
     PizzaOrderCost	DECIMAL(4,2)	NOT NULL,
     PizzaOrderDate	DATE	NOT NULL,
