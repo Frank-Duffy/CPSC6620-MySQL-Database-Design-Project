@@ -23,28 +23,34 @@ INSERT INTO topping (
     (16,"Goat Cheese",1.5,0.2,54,0,1.6,2.75,4,5.5),
     (17,"Bacon",1.5,0.25,89,0,1,1.5,2,3);
 
--- INSERT INTO discountbase VALUES
--- (NULL, "Employee", 15,NULL),
--- (NULL, "Lunch Special Medium", NULL,1.00),
--- (NULL, "Lunch Special Large", NULL,2.00),
--- (NULL, "Specialty Pizza", NULL,1.50),
--- (NULL, "Happy Hour", 10,NULL),
--- (NULL, "Gameday Special", 20,NULL);
+INSERT INTO discount (
+    DiscountNum, DiscountName, DiscountType, DiscountAmt
+) VALUES
+    (1, "Employee", '%',15),
+    (2, "Lunch Special Medium", '$',1.00),
+    (3, "Lunch Special Large", '$',2.00),
+    (4, "Specialty Pizza", '$',1.50),
+    (5, "Happy Hour", '%',10),
+    (6, "Gameday Special", '%',20);
 
--- INSERT INTO pizzabase VALUES
--- (1,"Small","Thin",3,0.5),
--- (2,"Small","Original",3,0.75),
--- (3,"Small","Pan",3.5,1),
--- (4,"Small","Gluten-Free",4,2),
--- (5,"Medium","Thin",5,1),
--- (6,"Medium","Original",5,1.5),
--- (7,"Medium","Pan",6,2.25),
--- (8,"Medium","Gluten-Free",6.25,3),
--- (9,"Large","Thin",8,1.25),
--- (10,"Large","Original",8,2),
--- (11,"Large","Pan",9,3),
--- (12,"Large","Gluten-Free",9.5,4),
--- (13,"XLarge","Thin",10,2),
--- (14,"XLarge","Original",10,3),
--- (15,"XLarge","Pan",11.5,4.5),
--- (16,"XLarge","Gluten-Free",12.5,6);
+INSERT INTO pizzabase (
+    PizzaBaseNum, PizzaBaseSize, PizzaBaseCrust, 
+    PizzaBasePrice, PizzaBaseCost
+)
+VALUES
+    (1,"Small","Thin",3,0.5),
+    (2,"Small","Original",3,0.75),
+    (3,"Small","Pan",3.5,1),
+    (4,"Small","Gluten-Free",4,2),
+    (5,"Medium","Thin",5,1),
+    (6,"Medium","Original",5,1.5),
+    (7,"Medium","Pan",6,2.25),
+    (8,"Medium","Gluten-Free",6.25,3),
+    (9,"Large","Thin",8,1.25),
+    (10,"Large","Original",8,2),
+    (11,"Large","Pan",9,3),
+    (12,"Large","Gluten-Free",9.5,4),
+    (13,"XLarge","Thin",10,2),
+    (14,"XLarge","Original",10,3),
+    (15,"XLarge","Pan",11.5,4.5),
+    (16,"XLarge","Gluten-Free",12.5,6);
