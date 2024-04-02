@@ -18,7 +18,7 @@ CREATE TABLE pizzaorder(
     PizzaOrderCost	DECIMAL(4,2)	NOT NULL,
     PizzaOrderDate	DATETIME	NOT NULL,
     PizzaOrderComplete	BOOLEAN	NOT NULL DEFAULT 0,
-    PizzaOrderType VARCHAR(7)	NOT NULL
+    PizzaOrderType VARCHAR(8)	NOT NULL
 );
 CREATE TABLE dinein(
 	PizzaOrderNum	INT PRIMARY KEY,

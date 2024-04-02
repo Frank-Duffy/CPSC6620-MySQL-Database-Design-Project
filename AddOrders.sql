@@ -348,13 +348,12 @@ INSERT INTO pizzatopping (
 -- End Order #5
 
 -- Start Order #6
-
 -- Insert order into pizzaorder with discount applied
 INSERT INTO pizzaorder (
     PizzaOrderPrice, PizzaOrderCost, PizzaOrderDate,
     PizzaOrderComplete, PizzaOrderType
 ) VALUES (
-    27.4125,3.19,'2024-03-02 18:17:00',True,'Delivery'
+    27.4125, 5.25,'2024-04-13 20:32:00',True,'Delivery'
 );
 
 -- get the PizzaOrderNum from the last pizzaorder
@@ -364,8 +363,8 @@ INSERT INTO customer (
     CustomerFName, CustomerLName, CustomerPhone,
     CustomerStreet, CustomerCity, CustomerState, CustomerZip
 ) VALUES (
-    "Frank", "Turner", "864-474-9953",
-    "6745 Wessex St.", "Anderson", "SC", 29621
+    "Milo", "Auckerman", "864-878-5679",
+    "8879 Suburban Home", "Anderson", "SC", 29621
 );
 
 -- get the last inserted CustomerID
@@ -379,7 +378,23 @@ INSERT INTO pizza (
     PizzaOrderNum, PizzaBaseNum, PizzaPrice, PizzaCost,
     PizzaIsComplete
 ) VALUES (
-    @OrderId, 9, 20.81, 3.19, True
+    @OrderId, 9, 11.05, 2.00, True
+);
+
+-- get the PizzaOrderNum from the last pizzaorder insert
+SET @LastPizzaNum = LAST_INSERT_ID();
+
+-- update pizzatopping 
+INSERT INTO pizzatopping (
+    PizzaNum, ToppingNum, PizzaToppingHasDouble
+) VALUES (@LastPizzaNum, 14, TRUE);
+
+-- update pizza table with pizza ordered
+INSERT INTO pizza (
+    PizzaOrderNum, PizzaBaseNum, PizzaPrice, PizzaCost,
+    PizzaIsComplete
+) VALUES (
+    @OrderId, 9, 16.3625, 3.25, True
 );
 
 -- get the PizzaOrderNum from the last pizzaorder insert
@@ -389,10 +404,12 @@ SET @LastPizzaNum = LAST_INSERT_ID();
 INSERT INTO pizzatopping (
     PizzaNum, ToppingNum, PizzaToppingHasDouble
 ) VALUES 
-    (@LastPizzaNum, 4, FALSE),
-    (@LastPizzaNum, 5, FALSE),
-    (@LastPizzaNum, 6, FALSE),
-    (@LastPizzaNum, 8, FALSE),
-    (@LastPizzaNum, 14, TRUE);
+    (@LastPizzaNum, 13, FALSE),
+    (@LastPizzaNum, 1, TRUE);
+
+-- update orderdiscount 
+INSERT INTO orderdiscount (
+    PizzaOrderNum, DiscountNum
+) VALUES (@OrderId, 1)
 
 -- End Order #6
