@@ -1,3 +1,5 @@
+-- Authors: Noah Britt, Francis Duffy
+
 -- CREATE schema Pizzeria;
 USE Pizzeria;
 

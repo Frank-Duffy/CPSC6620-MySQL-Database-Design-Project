@@ -1,4 +1,6 @@
 
+-- Authors: Noah Britt, Francis Duffy
+
 -- Insert order #1 into pizzaorder with discount applied
 INSERT INTO pizzaorder (
     PizzaOrderPrice, PizzaOrderCost, PizzaOrderDate,

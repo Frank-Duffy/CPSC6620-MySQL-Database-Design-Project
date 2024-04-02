@@ -1,3 +1,6 @@
+-- Authors: Noah Britt, Francis Duffy
+
+
 USE Pizzeria;
 
 SELECT * FROM customer;
