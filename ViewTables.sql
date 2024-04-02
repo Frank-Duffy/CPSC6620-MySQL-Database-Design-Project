@@ -2,7 +2,6 @@
 
 
 USE Pizzeria;
-
 SELECT * FROM customer;
 SELECT * FROM delivery;
 SELECT * FROM dinein;
