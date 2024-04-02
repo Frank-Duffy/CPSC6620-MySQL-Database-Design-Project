@@ -55,7 +55,6 @@ CREATE TABLE pizza(
 	PizzaIsComplete BOOLEAN NOT NULL DEFAULT 0,
     FOREIGN KEY (PizzaOrderNum) REFERENCES pizzaorder(PizzaOrderNum),
     FOREIGN KEY (PizzaBaseNum) REFERENCES pizzabase(PizzaBaseNum)
-
 );
 CREATE TABLE discount(
 	DiscountNum	    INT	PRIMARY KEY AUTO_INCREMENT,

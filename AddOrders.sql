@@ -1,5 +1,5 @@
 
--- Order #1
+-- Insert order #1 into pizzaorder with discount applied
 INSERT INTO pizzaorder (
     PizzaOrderPrice, PizzaOrderCost, PizzaOrderDate,
     PizzaOrderComplete, PizzaOrderType
@@ -7,15 +7,50 @@ INSERT INTO pizzaorder (
     18.75,3.68,'2024-03-05 12:03:00',True,'DineIn'
 );
 
+-- get the PizzaOrderNum from the last pizzaorder
 SET @OrderId = LAST_INSERT_ID();
 
--- INSERT INTO dinein VALUES (@OrderId, 21);
--- INSERT INTO pizza SELECT NULL, @OrderId, PizzaBaseNum, 20.75,3.68,True FROM pizzabase WHERE PizzaBaseSize="Large" AND PizzaBaseCrust="Thin";
--- SET @PizzaId=LAST_INSERT_ID();
--- INSERT INTO pizzatopping SELECT @PizzaId, ToppingNum, TRUE FROM topping WHERE ToppingName="Regular Cheese";
--- INSERT INTO discount SELECT @PizzaId, DiscountBaseNum FROM discountbase WHERE DiscountBaseName="Lunch Special Large";
--- UPDATE pizzaorder SET PizzaOrderPrice=(SELECT SUM(PizzaPrice) FROM pizza WHERE PizzaOrderNum=@OrderId) WHERE PizzaOrderNum=@OrderId;
--- UPDATE pizzaorder SET PizzaOrderCost=(SELECT SUM(PizzaCost) FROM pizza WHERE PizzaOrderNum=@OrderId) WHERE PizzaOrderNum=@OrderId;
+-- use it to create the dine in record
+INSERT INTO dinein VALUES (@OrderId, 21);
+
+-- insert pizza from order #1 into the pizza table with discount applied
+INSERT INTO pizza (
+    PizzaOrderNum, PizzaBaseNum, PizzaPrice, PizzaCost,
+    PizzaIsComplete
+) VALUES (
+    @OrderId, 9, 18.75,3.68,True
+);
+
+-- get the PizzaOrderNum from the last pizzaorder insert
+SET @LastPizzaNum = LAST_INSERT_ID();
+
+-- update pizzadiscount with order #1 pizza
+INSERT INTO pizzadiscount (
+    PizzaNum, DiscountNum
+) VALUES (
+    @LastPizzaNum, 3
+);
+
+-- update pizzatopping with order #1 pizza w/ extra cheese
+INSERT INTO pizzatopping (
+    PizzaNum, ToppingNum, PizzaToppingHasDouble
+) VALUES (
+    @LastPizzaNum, 13, TRUE
+)
+
+-- update pizzatopping with order #1 pizza w/ pepperoni
+INSERT INTO pizzatopping (
+    PizzaNum, ToppingNum
+) VALUES (
+    @LastPizzaNum, 1
+)
+
+-- update pizzatopping with order #1 pizza w/ sausage
+INSERT INTO pizzatopping (
+    PizzaNum, ToppingNum
+) VALUES (
+    @LastPizzaNum, 2
+)
 
 -- INSERT INTO pizzaorder VALUES (NULL, 0.0,0.0,'2024-03-02 05:30:00',True,'Pick Up');
 -- SET @OrderId = LAST_INSERT_ID();
