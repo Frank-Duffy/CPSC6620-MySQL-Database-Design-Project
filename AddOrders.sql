@@ -54,6 +54,55 @@ INSERT INTO pizzadiscount (
 
 -- End Order #1
 
+-- Start Order #2: Pick up for Matt Engers
+-- Insert order #2 into pizzaorder with discount applied
+INSERT INTO pizzaorder (
+    PizzaOrderPrice, PizzaOrderCost, PizzaOrderDate,
+    PizzaOrderComplete, PizzaOrderType
+) VALUES (
+    20.81,3.19,'2024-03-02 18:17:00',True,'Delivery'
+);
+
+-- get the PizzaOrderNum from the last pizzaorder
+SET @OrderId = LAST_INSERT_ID();
+
+INSERT INTO customer (
+    CustomerFName, CustomerLName, CustomerPhone,
+    CustomerStreet, CustomerCity, CustomerState, CustomerZip
+) VALUES (
+    "Frank", "Turner", "864-474-9953",
+    "6745 Wessex St.", "Anderson", "SC", 29621
+);
+
+-- get the last inserted CustomerID
+SET @CustId = LAST_INSERT_ID();
+
+-- use it to create the pickup record
+INSERT INTO delivery VALUES (@OrderId, @CustId);
+
+-- update pizza table with pizza ordered
+INSERT INTO pizza (
+    PizzaOrderNum, PizzaBaseNum, PizzaPrice, PizzaCost,
+    PizzaIsComplete
+) VALUES (
+    @OrderId, 9, 20.81, 3.19, True
+);
+
+-- get the PizzaOrderNum from the last pizzaorder insert
+SET @LastPizzaNum = LAST_INSERT_ID();
+
+-- update pizzatopping with order #3 pizza 1
+INSERT INTO pizzatopping (
+    PizzaNum, ToppingNum, PizzaToppingHasDouble
+) VALUES 
+    (@LastPizzaNum, 4, FALSE),
+    (@LastPizzaNum, 5, FALSE),
+    (@LastPizzaNum, 6, FALSE),
+    (@LastPizzaNum, 8, FALSE),
+    (@LastPizzaNum, 14, TRUE);
+
+-- End Order #2
+
 -- Start Order #3: Pick up for Andrew Wilkes-Krier
 -- Insert order #3 into pizzaorder with discount applied
 INSERT INTO pizzaorder (
@@ -231,7 +280,7 @@ INSERT INTO pizzatopping (
 ) VALUES 
     (@LastPizzaNum, 13, TRUE),
     (@LastPizzaNum, 1, FALSE),
-    (@LastPizzaNum, 2);
+    (@LastPizzaNum, 2, FALSE);
 -- End Order #4
 
 -- Start Order #5
@@ -297,3 +346,53 @@ INSERT INTO pizzatopping (
     (@LastPizzaNum, 12, FALSE);
 
 -- End Order #5
+
+-- Start Order #6
+
+-- Insert order into pizzaorder with discount applied
+INSERT INTO pizzaorder (
+    PizzaOrderPrice, PizzaOrderCost, PizzaOrderDate,
+    PizzaOrderComplete, PizzaOrderType
+) VALUES (
+    27.4125,3.19,'2024-03-02 18:17:00',True,'Delivery'
+);
+
+-- get the PizzaOrderNum from the last pizzaorder
+SET @OrderId = LAST_INSERT_ID();
+
+INSERT INTO customer (
+    CustomerFName, CustomerLName, CustomerPhone,
+    CustomerStreet, CustomerCity, CustomerState, CustomerZip
+) VALUES (
+    "Frank", "Turner", "864-474-9953",
+    "6745 Wessex St.", "Anderson", "SC", 29621
+);
+
+-- get the last inserted CustomerID
+SET @CustId = LAST_INSERT_ID();
+
+-- use it to create the pickup record
+INSERT INTO delivery VALUES (@OrderId, @CustId);
+
+-- update pizza table with pizza ordered
+INSERT INTO pizza (
+    PizzaOrderNum, PizzaBaseNum, PizzaPrice, PizzaCost,
+    PizzaIsComplete
+) VALUES (
+    @OrderId, 9, 20.81, 3.19, True
+);
+
+-- get the PizzaOrderNum from the last pizzaorder insert
+SET @LastPizzaNum = LAST_INSERT_ID();
+
+-- update pizzatopping 
+INSERT INTO pizzatopping (
+    PizzaNum, ToppingNum, PizzaToppingHasDouble
+) VALUES 
+    (@LastPizzaNum, 4, FALSE),
+    (@LastPizzaNum, 5, FALSE),
+    (@LastPizzaNum, 6, FALSE),
+    (@LastPizzaNum, 8, FALSE),
+    (@LastPizzaNum, 14, TRUE);
+
+-- End Order #6
