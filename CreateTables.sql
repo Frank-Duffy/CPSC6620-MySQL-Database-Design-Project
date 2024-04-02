@@ -14,7 +14,7 @@ CREATE TABLE pizzaorder(
 	PizzaOrderNum	INT	PRIMARY KEY AUTO_INCREMENT,
     PizzaOrderPrice	DECIMAL(4,2)	NOT NULL,
     PizzaOrderCost	DECIMAL(4,2)	NOT NULL,
-    PizzaOrderDate	DATE	NOT NULL,
+    PizzaOrderDate	DATETIME	NOT NULL,
     PizzaOrderComplete	BOOLEAN	NOT NULL DEFAULT 0,
     PizzaOrderType VARCHAR(7)	NOT NULL
 );
