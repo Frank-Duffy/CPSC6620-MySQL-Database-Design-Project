@@ -421,7 +421,7 @@ INSERT INTO pizzaorder (
     PizzaOrderPrice, PizzaOrderCost, PizzaOrderDate,
     PizzaOrderComplete, PizzaOrderType
 ) VALUES (
-    68.152, 23.62,'2024-04-20 19:11:00',True,'Delivery'
+    67.452, 23.62,'2024-04-20 19:11:00',True,'Delivery'
 );
 
 -- get the PizzaOrderNum from the last pizzaorder
@@ -460,7 +460,7 @@ INSERT INTO pizza (
     PizzaOrderNum, PizzaBaseNum, PizzaPrice, PizzaCost,
     PizzaIsComplete
 ) VALUES (
-    @OrderId, 14, 27.29, 9.19, True
+    @OrderId, 14, 22.352, 9.19, True
 );
 
 -- get the PizzaOrderNum from the last pizzaorder insert
@@ -480,7 +480,7 @@ INSERT INTO pizza (
     PizzaOrderNum, PizzaBaseNum, PizzaPrice, PizzaCost,
     PizzaIsComplete
 ) VALUES (
-    @OrderId, 14, 30.50, 6.25, True
+    @OrderId, 14, 23.70, 6.25, True
 );
 
 -- get the PizzaOrderNum from the last pizzaorder insert
@@ -505,7 +505,7 @@ INSERT INTO pizza (
     PizzaOrderNum, PizzaBaseNum, PizzaPrice, PizzaCost,
     PizzaIsComplete
 ) VALUES (
-    @OrderId, 14, 26.75, 8.18, True
+    @OrderId, 14, 21.40, 8.18, True
 );
 
 -- get the PizzaOrderNum from the last pizzaorder insert
@@ -523,3 +523,5 @@ INSERT INTO pizzatopping (
 INSERT INTO orderdiscount (
     OrderDiscountPizzaOrderNum, OrderDiscountNum
 ) VALUES (@OrderId, 6);
+
+-- End Order #7
