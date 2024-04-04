@@ -1,7 +1,7 @@
 -- Authors: Noah Britt, Francis Duffy
 
 -- CREATE schema Pizzeria;
-USE Pizzeria;
+USE Part2;
 
 
 CREATE TABLE pizzabase(
@@ -21,8 +21,8 @@ CREATE TABLE pizzaorder(
     PizzaOrderType VARCHAR(8)	NOT NULL
 );
 CREATE TABLE dinein(
-	PizzaOrderNum	INT PRIMARY KEY,
-    FOREIGN KEY (PizzaOrderNum) REFERENCES pizzaorder(PizzaOrderNum),
+	DineInPizzaOrderNum	INT PRIMARY KEY,
+    FOREIGN KEY (DineInPizzaOrderNum) REFERENCES pizzaorder(PizzaOrderNum),
     DineInTableNum	INT	NOT NULL
 );
 CREATE TABLE customer(
@@ -36,16 +36,16 @@ CREATE TABLE customer(
     CustomerPhone 	VARCHAR(12)
 );
 CREATE TABLE pickup(
-	PizzaOrderNum	INT PRIMARY KEY,
-    CustomerID	INT	NOT NULL,
-    FOREIGN KEY (PizzaOrderNum) REFERENCES pizzaorder(PizzaOrderNum),
-    FOREIGN KEY (CustomerID) REFERENCES customer(CustomerID)
+	PickupPizzaOrderNum	INT PRIMARY KEY,
+    PickupCustomerID	INT	NOT NULL,
+    FOREIGN KEY (PickupPizzaOrderNum) REFERENCES pizzaorder(PizzaOrderNum),
+    FOREIGN KEY (PickupCustomerID) REFERENCES customer(CustomerID)
 );
 CREATE TABLE delivery(
-	PizzaOrderNum	INT PRIMARY KEY,
-    CustomerID	INT	NOT NULL,
-    FOREIGN KEY (PizzaOrderNum) REFERENCES pizzaorder(PizzaOrderNum),
-    FOREIGN KEY (CustomerID) REFERENCES customer(CustomerID)
+	DeliveryPizzaOrderNum	INT PRIMARY KEY,
+    DeliveryCustomerID	INT	NOT NULL,
+    FOREIGN KEY (DeliveryPizzaOrderNum) REFERENCES pizzaorder(PizzaOrderNum),
+    FOREIGN KEY (DeliveryCustomerID) REFERENCES customer(CustomerID)
 );
 
 CREATE TABLE pizza(
@@ -65,18 +65,18 @@ CREATE TABLE discount(
     DiscountAmt	    DECIMAL(4,2)
 );
 CREATE TABLE orderdiscount(
-	PizzaOrderNum INT NOT NULL,
-    DiscountNum INT NOT NULL,
-    FOREIGN KEY (PizzaOrderNum) REFERENCES pizzaorder(PizzaOrderNum),
-    FOREIGN KEY (DiscountNum) REFERENCES discount(DiscountNum),
-    PRIMARY KEY (PizzaOrderNum, DiscountNum)
+	OrderDiscountPizzaOrderNum INT NOT NULL,
+    OrderDiscountNum INT NOT NULL,
+    FOREIGN KEY (OrderDiscountPizzaOrderNum) REFERENCES pizzaorder(PizzaOrderNum),
+    FOREIGN KEY (OrderDiscountNum) REFERENCES discount(DiscountNum),
+    PRIMARY KEY (OrderDiscountPizzaOrderNum, OrderDiscountNum)
 );
 CREATE TABLE pizzadiscount(
-	PizzaNum INT NOT NULL,
-    DiscountNum INT NOT NULL,
-    FOREIGN KEY (PizzaNum) REFERENCES pizza(PizzaNum),
-    FOREIGN KEY (DiscountNum) REFERENCES discount(DiscountNum),
-    PRIMARY KEY (PizzaNum, DiscountNum)
+	PizzaDiscountPizzaNum INT NOT NULL,
+    PizzaDiscountNum INT NOT NULL,
+    FOREIGN KEY (PizzaDiscountPizzaNum) REFERENCES pizza(PizzaNum),
+    FOREIGN KEY (PizzaDiscountNum) REFERENCES discount(DiscountNum),
+    PRIMARY KEY (PizzaDiscountPizzaNum, PizzaDiscountNum)
 );
 CREATE TABLE topping(
 	ToppingNum      INT PRIMARY KEY AUTO_INCREMENT,
@@ -91,11 +91,11 @@ CREATE TABLE topping(
     ToppingQOH      DECIMAL(5,2)    NOT NULL
 );
 CREATE TABLE pizzatopping(
-	PizzaNum	INT	NOT NULL,
-    ToppingNum	INT	NOT NULL,
+	PizzaToppingPizzaNum	INT	NOT NULL,
+    PizzaToppingToppingNum	INT	NOT NULL,
     PizzaToppingHasDouble BOOLEAN NOT NULL DEFAULT 0,
-    FOREIGN KEY (PizzaNum) REFERENCES	pizza(PizzaNum),
-    FOREIGN KEY (ToppingNum) REFERENCES topping(ToppingNum),
-    PRIMARY KEY (PizzaNum, ToppingNum)
+    FOREIGN KEY (PizzaToppingPizzaNum) REFERENCES	pizza(PizzaNum),
+    FOREIGN KEY (PizzaToppingToppingNum) REFERENCES topping(ToppingNum),
+    PRIMARY KEY (PizzaToppingPizzaNum, PizzaToppingToppingNum)
 );
 COMMIT;
