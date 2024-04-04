@@ -38,7 +38,7 @@ SET @LastPizzaNum = LAST_INSERT_ID();
 
 -- update pizzatopping with order #3 pizza 1
 INSERT INTO pizzatopping (
-    PizzaNum, ToppingNum, PizzaToppingHasDouble
+    PizzaToppingPizzaNum, PizzaToppingToppingNum, PizzaToppingHasDouble
 ) VALUES 
     (@LastPizzaNum, 5, FALSE),
     (@LastPizzaNum, 6, FALSE),
@@ -49,7 +49,7 @@ INSERT INTO pizzatopping (
 
 -- update pizzadiscount
 INSERT INTO pizzadiscount (
-    PizzaNum, DiscountNum
+    PizzaDiscountPizzaNum, PizzaDiscountNum
 ) VALUES (@LastPizzaNum, 4);
 
 -- End Order #1
@@ -93,7 +93,7 @@ SET @LastPizzaNum = LAST_INSERT_ID();
 
 -- update pizzatopping with order #3 pizza 1
 INSERT INTO pizzatopping (
-    PizzaNum, ToppingNum, PizzaToppingHasDouble
+    PizzaToppingPizzaNum, PizzaToppingToppingNum, PizzaToppingHasDouble
 ) VALUES 
     (@LastPizzaNum, 4, FALSE),
     (@LastPizzaNum, 5, FALSE),
@@ -144,7 +144,7 @@ SET @LastPizzaNum = LAST_INSERT_ID();
 
 -- update pizzatopping with order #3 pizza 1
 INSERT INTO pizzatopping (
-    PizzaNum, ToppingNum, PizzaToppingHasDouble
+    PizzaToppingPizzaNum, PizzaToppingToppingNum, PizzaToppingHasDouble
 ) VALUES 
     (@LastPizzaNum, 13, FALSE),
     (@LastPizzaNum, 1, FALSE);
@@ -162,7 +162,7 @@ SET @LastPizzaNum = LAST_INSERT_ID();
 
 -- update pizzatopping with order #3 pizza 2
 INSERT INTO pizzatopping (
-    PizzaNum, ToppingNum, PizzaToppingHasDouble
+    PizzaToppingPizzaNum, PizzaToppingToppingNum, PizzaToppingHasDouble
 ) VALUES 
     (@LastPizzaNum, 13, FALSE),
     (@LastPizzaNum, 1, FALSE);
@@ -180,7 +180,7 @@ SET @LastPizzaNum = LAST_INSERT_ID();
 
 -- update pizzatopping with order #3 pizza 3
 INSERT INTO pizzatopping (
-    PizzaNum, ToppingNum, PizzaToppingHasDouble
+    PizzaToppingPizzaNum, PizzaToppingToppingNum, PizzaToppingHasDouble
 ) VALUES 
     (@LastPizzaNum, 13, FALSE),
     (@LastPizzaNum, 1, FALSE);
@@ -198,7 +198,7 @@ SET @LastPizzaNum = LAST_INSERT_ID();
 
 -- update pizzatopping with order #3 pizza 4
 INSERT INTO pizzatopping (
-    PizzaNum, ToppingNum, PizzaToppingHasDouble
+    PizzaToppingPizzaNum, PizzaToppingToppingNum, PizzaToppingHasDouble
 ) VALUES 
     (@LastPizzaNum, 13, FALSE),
     (@LastPizzaNum, 1, FALSE);
@@ -216,7 +216,7 @@ SET @LastPizzaNum = LAST_INSERT_ID();
 
 -- update pizzatopping with order #3 pizza 5
 INSERT INTO pizzatopping (
-    PizzaNum, ToppingNum, PizzaToppingHasDouble
+    PizzaToppingPizzaNum, PizzaToppingToppingNum, PizzaToppingHasDouble
 ) VALUES 
     (@LastPizzaNum, 13, FALSE),
     (@LastPizzaNum, 1, FALSE);
@@ -234,7 +234,7 @@ SET @LastPizzaNum = LAST_INSERT_ID();
 
 -- update pizzatopping with order #3 pizza 6
 INSERT INTO pizzatopping (
-    PizzaNum, ToppingNum, PizzaToppingHasDouble
+    PizzaToppingPizzaNum, PizzaToppingToppingNum, PizzaToppingHasDouble
 ) VALUES 
     (@LastPizzaNum, 13, FALSE),
     (@LastPizzaNum, 1, FALSE);
@@ -269,14 +269,14 @@ SET @LastPizzaNum = LAST_INSERT_ID();
 
 -- update pizzadiscount with order #4 pizza
 INSERT INTO pizzadiscount (
-    PizzaNum, DiscountNum
+    PizzaDiscountPizzaNum, PizzaDiscountNum
 ) VALUES (
     @LastPizzaNum, 3
 );
 
 -- update pizzatopping with order #4 pizza w/ extra cheese
 INSERT INTO pizzatopping (
-    PizzaNum, ToppingNum, PizzaToppingHasDouble
+    PizzaToppingPizzaNum, PizzaToppingToppingNum, PizzaToppingHasDouble
 ) VALUES 
     (@LastPizzaNum, 13, TRUE),
     (@LastPizzaNum, 1, FALSE),
@@ -311,14 +311,14 @@ SET @LastPizzaNum = LAST_INSERT_ID();
 
 -- update pizzadiscount with order #5 1st pizza discounts
 INSERT INTO pizzadiscount (
-    PizzaNum, DiscountNum
+    PizzaDiscountPizzaNum, PizzaDiscountNum
 ) VALUES 
     (@LastPizzaNum, 2),
     (@LastPizzaNum, 4);
 
 -- update pizzatopping with order #5 1st pizza
 INSERT INTO pizzatopping (
-    PizzaNum, ToppingNum, PizzaToppingHasDouble
+    PizzaToppingPizzaNum, PizzaToppingToppingNum, PizzaToppingHasDouble
 ) VALUES 
     (@LastPizzaNum, 15, FALSE),
     (@LastPizzaNum, 9, FALSE),
@@ -339,7 +339,7 @@ SET @LastPizzaNum = LAST_INSERT_ID();
 
 -- update pizzatopping with order #5 2nd pizza
 INSERT INTO pizzatopping (
-    PizzaNum, ToppingNum, PizzaToppingHasDouble
+    PizzaToppingPizzaNum, PizzaToppingToppingNum, PizzaToppingHasDouble
 ) VALUES 
     (@LastPizzaNum, 13, FALSE),
     (@LastPizzaNum, 4, FALSE),
@@ -386,7 +386,7 @@ SET @LastPizzaNum = LAST_INSERT_ID();
 
 -- update pizzatopping 
 INSERT INTO pizzatopping (
-    PizzaNum, ToppingNum, PizzaToppingHasDouble
+    PizzaToppingPizzaNum, PizzaToppingToppingNum, PizzaToppingHasDouble
 ) VALUES (@LastPizzaNum, 14, TRUE);
 
 -- update pizza table with pizza ordered
@@ -402,14 +402,14 @@ SET @LastPizzaNum = LAST_INSERT_ID();
 
 -- update pizzatopping 
 INSERT INTO pizzatopping (
-    PizzaNum, ToppingNum, PizzaToppingHasDouble
+    PizzaToppingPizzaNum, PizzaToppingToppingNum, PizzaToppingHasDouble
 ) VALUES 
     (@LastPizzaNum, 13, FALSE),
     (@LastPizzaNum, 1, TRUE);
 
 -- update orderdiscount 
 INSERT INTO orderdiscount (
-    PizzaOrderNum, DiscountNum
+    OrderDiscountPizzaOrderNum, OrderDiscountNum
 ) VALUES (@OrderId, 1)
 
 -- End Order #6

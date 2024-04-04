@@ -1,6 +1,4 @@
--- Authors: Noah Britt, Francis Duffy
-
-USE Pizzeria;
+USE Part2;
 
 INSERT INTO topping (
     ToppingNum, ToppingName, ToppingPrice, ToppingCost, 
