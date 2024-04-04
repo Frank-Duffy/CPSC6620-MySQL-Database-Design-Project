@@ -1,15 +1,13 @@
--- Authors: Noah Britt, Francis Duffy
-
-
-USE Pizzeria;
-SELECT * FROM customer;
-SELECT * FROM delivery;
-SELECT * FROM dinein;
-SELECT * FROM discount;
-SELECT * FROM discountbase;
+USE Part2;
 SELECT * FROM pickup;
-SELECT * FROM pizza;
-SELECT * FROM pizzabase;
-SELECT * FROM pizzaorder;
+SELECT * FROM dinein;
+SELECT * FROM delivery;
+SELECT * FROM customer;
+SELECT * FROM discount;
+SELECT * FROM pizzadiscount;
+SELECT * FROM orderdiscount;
 SELECT * FROM pizzatopping;
+SELECT * FROM pizza;
+SELECT * FROM pizzaorder;
+SELECT * FROM pizzabase;
 SELECT * FROM topping;
