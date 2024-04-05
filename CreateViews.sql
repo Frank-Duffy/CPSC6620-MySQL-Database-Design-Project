@@ -3,8 +3,8 @@ Use Part2;
 CREATE OR REPLACE VIEW ToppingPopularity AS
 SELECT t.ToppingName, COUNT(pt.PizzaToppingToppingNum) + SUM(CASE WHEN pt.PizzaToppingHasDouble THEN 1 ELSE 0 END) AS ToppingCount
 FROM topping t
-JOIN  pizzatopping pt ON t.ToppingNum = pt.PizzaToppingToppingNum
-JOIN pizza p ON pt.PizzaToppingPizzaNum = p.PizzaNum
+LEFT JOIN  pizzatopping pt ON t.ToppingNum = pt.PizzaToppingToppingNum
+LEFT JOIN pizza p ON pt.PizzaToppingPizzaNum = p.PizzaNum
 GROUP BY t.ToppingName ORDER BY ToppingCount DESC;
 SELECT * FROM ToppingPopularity;
 
