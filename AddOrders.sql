@@ -1,4 +1,3 @@
-
 -- Authors: Noah Britt, Francis Duffy
 
 Use Pizzeria;

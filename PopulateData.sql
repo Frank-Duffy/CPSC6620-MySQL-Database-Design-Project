@@ -1,3 +1,5 @@
+-- Authors: Noah Britt, Francis Duffy
+
 USE Pizzeria;
 
 INSERT INTO topping (

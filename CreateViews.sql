@@ -1,3 +1,5 @@
+-- Authors: Noah Britt, Francis Duffy
+
 Use Pizzeria;
 
 CREATE OR REPLACE VIEW ToppingPopularity AS

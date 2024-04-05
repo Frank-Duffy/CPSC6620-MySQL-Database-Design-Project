@@ -1,3 +1,5 @@
+-- Authors: Noah Britt, Francis Duffy
+
 USE Pizzeria;
 SELECT * FROM pickup;
 SELECT * FROM dinein;
