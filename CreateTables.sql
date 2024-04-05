@@ -1,7 +1,7 @@
 -- Authors: Noah Britt, Francis Duffy
 
 -- CREATE schema Pizzeria;
-USE Part2;
+USE Pizzeria;
 
 
 CREATE TABLE pizzabase(

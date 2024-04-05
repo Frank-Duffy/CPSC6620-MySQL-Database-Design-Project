@@ -1,6 +1,6 @@
 -- Authors: Noah Britt, Francis Duffy
 
-USE Part2;
+USE Pizzeria;
 
 DROP TABLE IF EXISTS 
     pickup, 

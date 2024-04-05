@@ -1,6 +1,8 @@
 
 -- Authors: Noah Britt, Francis Duffy
 
+Use Pizzeria;
+
 -- Start Order #1: Pick up for Matt Engers
 -- Insert order #1 into pizzaorder with discount applied
 INSERT INTO pizzaorder (

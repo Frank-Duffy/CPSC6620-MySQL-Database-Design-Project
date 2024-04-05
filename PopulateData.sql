@@ -1,4 +1,4 @@
-USE Part2;
+USE Pizzeria;
 
 INSERT INTO topping (
     ToppingNum, ToppingName, ToppingPrice, ToppingCost, 

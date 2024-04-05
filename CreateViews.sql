@@ -1,4 +1,4 @@
-Use Part2;
+Use Pizzeria;
 
 CREATE OR REPLACE VIEW ToppingPopularity AS
 SELECT t.ToppingName, COUNT(pt.PizzaToppingToppingNum) + SUM(CASE WHEN pt.PizzaToppingHasDouble THEN 1 ELSE 0 END) AS ToppingCount

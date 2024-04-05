@@ -1,4 +1,4 @@
-USE Part2;
+USE Pizzeria;
 SELECT * FROM pickup;
 SELECT * FROM dinein;
 SELECT * FROM delivery;
