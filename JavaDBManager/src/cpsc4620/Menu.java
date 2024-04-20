@@ -36,7 +36,6 @@ public class Menu {
 		// present a menu of options and take their selection
 
 		PrintMenu();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		String option = reader.readLine();
 		menu_option = Integer.parseInt(option);
 
@@ -100,17 +99,19 @@ public class Menu {
 		// User Input Prompts...
 		System.out.println(
 				"Is this order for: \n1.) Dine-in\n2.) Pick-up\n3.) Delivery\nEnter the number of your choice:");
-		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		String option = reader.readLine();
 		int order_option = Integer.parseInt(option);
 		String existing_customer = "";
+		Order order = null;
 		switch (order_option) {
 			case 1:
+				order.setOrderType("dine-in");
 				System.out.println("What is the table number for this order?");
 				String table_num_string = reader.readLine();
 				int table_num = Integer.parseInt(table_num_string);
 				break;
 			case 2:
+				order.setOrderType("pick-up");
 				System.out.println("Is this order for an existing customer? Answer y/n: ");
 				existing_customer = reader.readLine();
 				while (existing_customer.toLowerCase() != "y" && existing_customer.toLowerCase() != "n") {
@@ -120,15 +121,27 @@ public class Menu {
 				}
 				if (existing_customer.toLowerCase() == "y") {
 					System.out.println("Here's a list of the current customers: ");
-					viewCustomers();
+					DBNinja.getCustomerList();
 					System.out.println("Which customer is this order for? Enter ID Number:");
 					String customer_string = reader.readLine();
-					int customer = Integer.parseInt(option);
+					int customer_int = Integer.parseInt(option);
+					order.setCustID(customer_int);
 				} else {
-					EnterCustomer();
+					System.out.println("What is this customer's name (first <space> last");
+					String name = reader.readLine();
+					System.out.println("What is this customer's phone number (##########) (No dash/space)");
+					String phone_string = reader.readLine();
+					// int phone = Integer.parseInt(phone_string);
+					Customer new_customer = new Customer(0, null, null, null);
+					new_customer.setFName(name.split(" ")[0]);
+					new_customer.setLName(name.split(" ")[1]);
+					new_customer.setPhone(phone_string);
+					DBNinja.addCustomer(new_customer);
+					order.setCustID(DBNinja.findCustomerByPhone(phone_string).getCustID());
 				}
 				break;
 			case 3:
+				order.setOrderType("delivery");
 				System.out.println("Is this order for an existing customer? Answer y/n: ");
 				existing_customer = reader.readLine();
 				while (existing_customer.toLowerCase() != "y" && existing_customer.toLowerCase() != "n") {
@@ -144,11 +157,20 @@ public class Menu {
 					int customer = Integer.parseInt(option);
 
 				} else {
-					EnterCustomer();
+					System.out.println("What is this customer's name (first <space> last");
+					String name = reader.readLine();
+					System.out.println("What is this customer's phone number (##########) (No dash/space)");
+					String phone_string = reader.readLine();
+					// int phone = Integer.parseInt(phone_string);
+					Customer new_customer = new Customer(0, null, null, null);
+					new_customer.setFName(name.split(" ")[0]);
+					new_customer.setLName(name.split(" ")[1]);
+					new_customer.setPhone(phone_string);
 
 					System.out.println("What is the House/Apt Number for this order? (e.g., 111)");
 					String house_string = reader.readLine();
 					int house = Integer.parseInt(house_string);
+
 					System.out.println("What is the Street for this order? (e.g., Smile Street)");
 					String street = reader.readLine();
 					System.out.println("What is the City for this order? (e.g., Greenville)");
@@ -158,8 +180,10 @@ public class Menu {
 					System.out.println("What is the Zip Code for this order? (e.g., 20605)");
 					String zip_string = reader.readLine();
 					int zip = Integer.parseInt(zip_string);
+					new_customer.setAddress(house_string, city, state, zip_string);
+					DBNinja.addCustomer(new_customer);
+					order.setCustID(DBNinja.findCustomerByPhone(phone_string).getCustID());
 
-					// TODO Add the address to the database
 				}
 				break;
 		}
@@ -187,13 +211,16 @@ public class Menu {
 					"Which Order Discount do you want to add? Enter the DiscountID. Enter -1 to stop adding Discounts: ");
 			String order_discount_string = reader.readLine();
 			int order_discount = Integer.parseInt(order_discount_string);
-			// TODO Add discount to order
+			DBNinja.useOrderDiscount(order, DBNinja.getDiscountList().get(order_discount - 1));
+
 			while (order_discount != -1) {
 				System.out.println(
 						"Which Order Discount do you want to add? Enter the DiscountID. Enter -1 to stop adding Discounts: ");
 				order_discount_string = reader.readLine();
 				order_discount = Integer.parseInt(order_discount_string);
-				// TODO add discount to order
+
+				DBNinja.useOrderDiscount(order, DBNinja.getDiscountList().get(order_discount - 1));
+
 			}
 		}
 
@@ -230,13 +257,15 @@ public class Menu {
 
 		// User Input Prompts...
 		System.out.println("What is this customer's name (first <space> last");
-		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		String name = reader.readLine();
 		System.out.println("What is this customer's phone number (##########) (No dash/space)");
 		String phone_string = reader.readLine();
-		int phone = Integer.parseInt(phone_string);
-		// TODO Call function to add customer to database
-
+		// int phone = Integer.parseInt(phone_string);
+		Customer new_customer = new Customer(0, null, null, null);
+		new_customer.setFName(name.split(" ")[0]);
+		new_customer.setLName(name.split(" ")[1]);
+		new_customer.setPhone(phone_string);
+		DBNinja.addCustomer(new_customer);
 	}
 
 	// View any orders that are not marked as completed
@@ -261,22 +290,28 @@ public class Menu {
 				"Would you like to:\n(a) display all orders [open or closed]\n(b) display all open orders\n(c) display all completed [closed] orders\n(d) display orders since a specific date");
 		String order_display_option = reader.readLine();
 		String order_response = "";
+		ArrayList<Order> order_list = null;
 		switch (order_display_option.toLowerCase()) {
 			case "a":
-				// TODO Add connection displaying all orders
+				order_list = DBNinja.getOrders(false);
 				break;
 			case "b":
-				// TODO Add connection displaying all open orders
+				order_list = DBNinja.getOrders(true);
 				break;
 			case "c":
-				// TODO Add connection displaying all closed orders
-
+				ArrayList<Order> all_orders = DBNinja.getOrders(false);
+				for (Order i : all_orders) {
+					if (i.getIsComplete() == 1) {
+						order_list.add(i);
+					}
+				}
 				break;
 			case "d":
 
 				System.out.println("What is the date you want to restrict by? (FORMAT= YYYY-MM-DD)");
 				String date = reader.readLine();
-				// TODO Add connection displaying orders within date
+				order_list = DBNinja.getOrdersByDate(date);
+
 				break;
 			default:
 				System.out.println("I don't understand that input, returning to menu");
@@ -287,13 +322,21 @@ public class Menu {
 			System.out.println("No orders to display, returning to menu.");
 			return;
 		}
+		for (Order i : order_list) {
+			System.out.println(i.toSimplePrint());
+		}
 		System.out.println("Which order would you like to see in detail? Enter the number (-1 to exit): ");
 		String specific_order_string = reader.readLine();
 		int specific_order = Integer.parseInt(specific_order_string);
 		if (specific_order == -1) {
 			return;
 		}
-		// TODO If the specified value is in the order ids, show the order
+		for (Order i : order_list) {
+			if (i.getOrderID() == specific_order) {
+				System.out.println(i.toString());
+				break;
+			}
+		}
 		// Else:
 		System.out.println("Incorrect entry, returning to menu.");
 		return;
@@ -320,14 +363,26 @@ public class Menu {
 		 */
 
 		// User Input Prompts...
-		// TODO get all open orders
-		// TODO If there are no open orders:
-		System.out.println("There are no open orders currently... returning to menu...");
+
+		ArrayList<Order> openOrders = DBNinja.getOrders(true);
+		if (openOrders.size() == 0) {
+			System.out.println("There are no open orders currently... returning to menu...");
+			return;
+		}
+		for (Order i : openOrders) {
+			System.out.println(i.toSimplePrint());
+
+		}
 
 		System.out.println("Which order would you like mark as complete? Enter the OrderID: ");
 		String order_complete_string = reader.readLine();
 		int order_complete = Integer.parseInt(order_complete_string);
-		// TODO If entry is invalid, else update the order as complete
+		for (Order i : openOrders) {
+			if (i.getOrderID() == order_complete) {
+				DBNinja.completeOrder(i);
+				return;
+			}
+		}
 		System.out.println("Incorrect entry, not an option");
 		return;
 
@@ -374,9 +429,7 @@ public class Menu {
 		 * 
 		 * Once the discounts are added, we can return the pizza
 		 */
-
-		Pizza ret = new Pizza(null, null, null, null, null, null, null, null);
-
+		Pizza ret = null;
 		// User Input Prompts...
 		System.out.println("What size is the pizza?");
 		System.out.println("1." + DBNinja.size_s);
@@ -386,8 +439,16 @@ public class Menu {
 		System.out.println("Enter the corresponding number: ");
 		String size_string = reader.readLine();
 		int size = Integer.parseInt(size_string);
-		// TODO get actual size from database
-		// pizza.setSize(size);
+		switch (size) {
+			case 1:
+				ret.setSize(DBNinja.size_s);
+			case 2:
+				ret.setSize(DBNinja.size_m);
+			case 3:
+				ret.setSize(DBNinja.size_l);
+			case 4:
+				ret.setSize(DBNinja.size_xl);
+		}
 		System.out.println("What crust for this pizza?");
 		System.out.println("1." + DBNinja.crust_thin);
 		System.out.println("2." + DBNinja.crust_orig);
@@ -396,29 +457,66 @@ public class Menu {
 		System.out.println("Enter the corresponding number: ");
 		String crust_string = reader.readLine();
 		int crust = Integer.parseInt(crust_string);
-		// TODO get actual size from database
-		// pizza.setSize(size);
-		System.out.println("Available Toppings:");
-		// TODO print all available toppings
+		switch (crust) {
+			case 1:
+				ret.setCrustType(DBNinja.crust_thin);
+			case 2:
+				ret.setCrustType(DBNinja.crust_orig);
+			case 3:
+				ret.setCrustType(DBNinja.crust_pan);
+			case 4:
+				ret.setCrustType(DBNinja.crust_gf);
+		}
+		DBNinja.addPizza(ret);
+		DBNinja.printInventory();
 		String topping_string = reader.readLine();
 		int topping = Integer.parseInt(topping_string);
+
 		System.out.println("Which topping do you want to add? Enter the TopID. Enter -1 to stop adding toppings: ");
 		while (topping != -1) {
 			topping_string = reader.readLine();
 			topping = Integer.parseInt(topping_string);
-			// TODO get topping with that ID
 
-			// TODO if database doesn't have enough of topping
+			for (Topping i : DBNinja.getToppingList()) {
+
+				if (i.getTopID() == topping) {
+					double sizeMax = 0.0;
+
+					switch (size) {
+						case 1:
+							sizeMax = i.getPerAMT();
+							break;
+						case 2:
+							sizeMax = i.getMedAMT();
+							break;
+						case 3:
+							sizeMax = i.getLgAMT();
+							break;
+						case 4:
+							sizeMax = i.getXLAMT();
+							break;
+					}
+					if (i.getCurINVT() < sizeMax) {
+						System.out.println("We don't have enough of that topping to add it...");
+						break;
+					}
+					System.out.println("Do you want to add extra topping? Enter y/n");
+					String extra_string = reader.readLine();
+					if (extra_string.toLowerCase() == "y") {
+
+						DBNinja.useTopping(ret, DBNinja.getToppingList().get(topping - 1), true);
+					} else {
+						DBNinja.useTopping(ret, DBNinja.getToppingList().get(topping - 1), false);
+					}
+
+				}
+			}
+
+			System.out.println("Which topping do you want to add? Enter the TopID. Enter -1 to stop adding toppings: ");
+			topping_string = reader.readLine();
+			topping = Integer.parseInt(topping_string);
 			// System.out.println("We don't have enough of that topping to add it...");
 
-			System.out.println("Do you want to add extra topping? Enter y/n");
-			String extra_string = reader.readLine();
-			if (extra_string.toLowerCase() == "y") {
-				ret.addToppings(topping, true);
-			} else {
-				ret.addToppings(topping, false);
-			}
-			// ret.addToppings()
 		}
 		System.out.println("Do you want to add discounts to this Pizza? Enter y/n?");
 		String continue_adding = reader.readLine();
@@ -434,17 +532,16 @@ public class Menu {
 						"Which Pizza Discount do you want to add? Enter the DiscountID. Enter -1 to stop adding Discounts: ");
 				discount_string = reader.readLine();
 				discount = Integer.parseInt(discount_string);
-				// TODO: Get actual discount object
-				// ret.addDiscounts(discount);
+				DBNinja.usePizzaDiscount(ret, DBNinja.getDiscountList().get(discount - 1));
 			}
 		}
 
 		// TODO compute pizza price
-		double pizza_price = 0.0;
-		ret.setCustPrice(pizza_price);
-		// TODO compute pizza cost
-		double pizza_cost = 0.0;
-		ret.setBusPrice(pizza_cost);
+		// double pizza_price = 0.0;
+		// ret.setCustPrice(pizza_price);
+		// // TODO compute pizza cost
+		// double pizza_cost = 0.0;
+		// ret.setBusPrice(pizza_cost);
 
 		return ret;
 	}
@@ -462,13 +559,13 @@ public class Menu {
 		String report_type = reader.readLine();
 		switch (report_type) {
 			case "a":
-				// TODO Show report by popularity
+				DBNinja.printToppingPopReport();
 				break;
 			case "b":
-				// TODO Show report by profit
+				DBNinja.printProfitByPizzaReport();
 				break;
 			case "c":
-				// TODO Show report by order
+				DBNinja.printProfitByOrderType();
 				break;
 			default:
 				System.out.println("I don't understand that input... returning to menu...");
