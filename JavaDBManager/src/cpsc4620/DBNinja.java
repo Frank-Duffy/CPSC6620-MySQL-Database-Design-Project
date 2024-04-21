@@ -374,16 +374,50 @@ public final class DBNinja {
 	}
 
 	public static ArrayList<Topping> getToppingList() throws SQLException, IOException {
-		connect_to_db();
-		/*
-		 * Query the database for the aviable toppings and
-		 * return an arrayList of all the available toppings.
-		 * Don't forget to order the data coming from the database appropriately.
-		 * 
-		 */
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
+		ArrayList<Topping> toppingList = new ArrayList<>();
 
-		// DO NOT FORGET TO CLOSE YOUR CONNECTION
-		return null;
+		try {
+			connect_to_db();
+
+			// Prepare the SQL query to retrieve available toppings
+			String query = "SELECT * FROM topping ORDER BY ToppingNum";
+			preparedStatement = conn.prepareStatement(query);
+			resultSet = preparedStatement.executeQuery();
+
+			// Process the result set and populate Topping objects
+			// Process the result set and populate Topping objects
+			while (resultSet.next()) {
+				int topID = resultSet.getInt("ToppingNum");
+				String topName = resultSet.getString("ToppingName");
+				double perAMT = resultSet.getDouble("ToppingPersonal");
+				double medAMT = resultSet.getDouble("ToppingMedium");
+				double lgAMT = resultSet.getDouble("ToppingLarge");
+				double xLAMT = resultSet.getDouble("ToppingXLarge");
+				double custPrice = resultSet.getDouble("ToppingPrice");
+				double busPrice = resultSet.getDouble("ToppingCost");
+				int minINVT = resultSet.getInt("ToppingMinQOH");
+				int curINVT = resultSet.getInt("ToppingQOH");
+
+				Topping topping = new Topping(topID, topName, perAMT, medAMT, lgAMT, xLAMT, custPrice, busPrice,
+						minINVT, curINVT);
+				toppingList.add(topping);
+			}
+		} finally {
+			// Close resources in a finally block to ensure they are always closed
+			if (resultSet != null) {
+				resultSet.close();
+			}
+			if (preparedStatement != null) {
+				preparedStatement.close();
+			}
+			if (conn != null) {
+				conn.close();
+			}
+		}
+
+		return toppingList;
 	}
 
 	public static Topping findToppingByName(String name) {
@@ -398,13 +432,41 @@ public final class DBNinja {
 	}
 
 	public static void addToInventory(Topping t, double quantity) throws SQLException, IOException {
-		connect_to_db();
 		/*
 		 * Updates the quantity of the topping in the database by the amount specified.
 		 * 
 		 */
 
-		// DO NOT FORGET TO CLOSE YOUR CONNECTION
+		connect_to_db(); // Establish database connection
+		PreparedStatement preparedStatement = null;
+
+		try {
+
+			// Prepare the SQL update statement to increment the ToppingQOH by the specified
+			// quantity
+			String query = "UPDATE topping SET ToppingQOH = ToppingQOH + ? WHERE ToppingNum = ?";
+			preparedStatement = conn.prepareStatement(query);
+
+			// Set the parameters for the prepared statement
+			preparedStatement.setDouble(1, quantity);
+			preparedStatement.setInt(2, t.getTopID());
+
+			// Execute the update statement
+			int rowsAffected = preparedStatement.executeUpdate();
+			if (rowsAffected > 0) {
+				System.out.println("Inventory updated successfully for topping: " + t.getTopName());
+			} else {
+				System.out.println("No rows were updated. Topping may not exist in the database.");
+			}
+		} finally {
+			// Close resources in a finally block to ensure they are always closed
+			if (preparedStatement != null) {
+				preparedStatement.close();
+			}
+			if (conn != null) {
+				conn.close();
+			}
+		}
 	}
 
 	public static double getBaseCustPrice(String size, String crust) throws SQLException, IOException {
@@ -430,13 +492,14 @@ public final class DBNinja {
 	}
 
 	public static void printInventory() throws SQLException, IOException {
-		connect_to_db();
 		/*
 		 * Queries the database and prints the current topping list with quantities.
 		 * 
 		 * The result should be readable and sorted as indicated in the prompt.
 		 * 
 		 */
+
+		connect_to_db(); // Establish connection to db.
 		try (
 				PreparedStatement preparedStatement = conn
 						.prepareStatement("SELECT ToppingNum, ToppingName, ToppingQOH FROM topping");
