@@ -299,7 +299,6 @@ public class Menu {
 		System.out.println(
 				"Would you like to:\n(a) display all orders [open or closed]\n(b) display all open orders\n(c) display all completed [closed] orders\n(d) display orders since a specific date");
 		String order_display_option = reader.readLine();
-		String order_response = "";
 		ArrayList<Order> order_list = null;
 		switch (order_display_option.toLowerCase()) {
 			case "a":
@@ -309,12 +308,10 @@ public class Menu {
 				order_list = DBNinja.getOrders(true);
 				break;
 			case "c":
-				ArrayList<Order> all_orders = DBNinja.getOrders(false);
-				for (Order i : all_orders) {
-					if (i.getIsComplete() == 1) {
-						order_list.add(i);
-					}
-				}
+				order_list = DBNinja.getOrders(false);
+
+				// filter using lamba expression
+				order_list.removeIf(order -> order.getIsComplete() != 1);
 				break;
 			case "d":
 
@@ -328,12 +325,12 @@ public class Menu {
 				return;
 
 		}
-		if (order_response == "") {
+		if (order_list == null) {
 			System.out.println("No orders to display, returning to menu.");
 			return;
 		}
-		for (Order i : order_list) {
-			System.out.println(i.toSimplePrint());
+		for (Order order : order_list) {
+			System.out.println(order); 
 		}
 		System.out.println("Which order would you like to see in detail? Enter the number (-1 to exit): ");
 		String specific_order_string = reader.readLine();

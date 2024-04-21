@@ -2,6 +2,7 @@ package cpsc4620;
 
 import java.io.IOException;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Date;
 
@@ -243,7 +244,6 @@ public final class DBNinja {
 	}
 
 	public static ArrayList<Order> getOrders(boolean openOnly) throws SQLException, IOException {
-		connect_to_db();
 		/*
 		 * Return an arraylist of all of the orders.
 		 * openOnly == true => only return a list of open (ie orders that have not been
@@ -257,8 +257,74 @@ public final class DBNinja {
 		 * 
 		 */
 
-		// DO NOT FORGET TO CLOSE YOUR CONNECTION
-		return null;
+		 ArrayList<Order> orders = new ArrayList<>();
+		 connect_to_db();
+ 
+		 PreparedStatement stmt = null;
+		 ResultSet rs = null;
+ 
+		 try {
+			String query = "SELECT o.*, d.DineInTableNum, p.PickupCustomerID, de.DeliveryCustomerID, " +
+				"c.CustomerStreet, c.CustomerCity, c.CustomerState, c.CustomerZip " +
+				"FROM pizzaorder o " +
+				"LEFT JOIN dinein d ON o.PizzaOrderNum = d.DineInPizzaOrderNum " +
+				"LEFT JOIN pickup p ON o.PizzaOrderNum = p.PickupPizzaOrderNum " +
+				"LEFT JOIN delivery de ON o.PizzaOrderNum = de.DeliveryPizzaOrderNum " +
+				"LEFT JOIN customer c ON p.PickupCustomerID = c.CustomerID OR de.DeliveryCustomerID = c.CustomerID " +
+				(openOnly ? "WHERE o.PizzaOrderComplete = FALSE " : "") +
+				"ORDER BY o.PizzaOrderDate DESC";
+ 
+			stmt = conn.prepareStatement(query);
+			rs = stmt.executeQuery();
+ 
+			while (rs.next()) {
+				int orderNum = rs.getInt("PizzaOrderNum");
+				double price = rs.getDouble("PizzaOrderPrice");
+				double cost = rs.getDouble("PizzaOrderCost");
+				Timestamp orderTimestamp = rs.getTimestamp("PizzaOrderDate");
+				boolean isComplete = rs.getBoolean("PizzaOrderComplete");
+				String orderType = rs.getString("PizzaOrderType");
+				
+				// Convert Date to formatted string
+				String orderDateString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(orderTimestamp);
+
+        		// Map boolean isComplete to int (0 or 1)
+        		int isCompleteInt = isComplete ? 1 : 0;
+				
+				Order order;
+				switch (orderType) {
+					case "DineIn":
+						int tableNum = rs.getInt("DineInTableNum");
+						order = new DineinOrder(orderNum, 0, orderDateString, cost, price, isCompleteInt, tableNum);
+						break;
+					case "PickUp":
+						int pickupCustomerID = rs.getInt("PickupCustomerID");
+						int isPickedUp = 0;
+						order = new PickupOrder(orderNum, pickupCustomerID, orderDateString, price, cost, isPickedUp, isCompleteInt);
+						break;
+					case "Delivery":
+						int deliveryCustomerID = rs.getInt("DeliveryCustomerID");
+						String customerStreet = rs.getString("CustomerStreet");
+						String customerCity = rs.getString("CustomerCity");
+						String customerState = rs.getString("CustomerState");
+						int customerZip = rs.getInt("CustomerZip");
+						String customerAddress = customerStreet + ", " + customerCity + ", " + customerState + " " + customerZip;
+						order = new DeliveryOrder(orderNum, deliveryCustomerID, orderDateString, price, cost, isCompleteInt, customerAddress);
+						break;
+					default:
+						continue;
+				}
+				orders.add(order);
+			}
+		} catch (SQLException e) {
+			System.out.println("SQL Exception: " + e.getMessage());
+			throw e;
+		} finally {
+			if (rs != null) try { rs.close(); } catch (SQLException e) { e.printStackTrace(); }
+			if (stmt != null) try { stmt.close(); } catch (SQLException e) { e.printStackTrace(); }
+			if (conn != null) try { conn.close(); } catch (SQLException e) { e.printStackTrace(); }
+		}
+		return orders;
 	}
 
 	public static Order getLastOrder() {
@@ -601,20 +667,20 @@ public final class DBNinja {
 
 		connect_to_db();
 
-		/*
-		 * an example query using a constructed string...
-		 * remember, this style of query construction could be subject to sql injection
-		 * attacks!
-		 * 
-		 */
-		String cname1 = "";
-		String query = "Select FName, LName From customer WHERE CustID=" + CustID + ";";
-		Statement stmt = conn.createStatement();
-		ResultSet rset = stmt.executeQuery(query);
+		// /*
+		//  * an example query using a constructed string...
+		//  * remember, this style of query construction could be subject to sql injection
+		//  * attacks!
+		//  * 
+		//  */
+		// String cname1 = "";
+		// String query = "Select FName, LName From customer WHERE CustID=" + CustID + ";";
+		// Statement stmt = conn.createStatement();
+		// ResultSet rset = stmt.executeQuery(query);
 
-		while (rset.next()) {
-			cname1 = rset.getString(1) + " " + rset.getString(2);
-		}
+		// while (rset.next()) {
+		// 	cname1 = rset.getString(1) + " " + rset.getString(2);
+		// }
 
 		/*
 		 * an example of the same query using a prepared statement...
@@ -624,17 +690,17 @@ public final class DBNinja {
 		PreparedStatement os;
 		ResultSet rset2;
 		String query2;
-		query2 = "Select FName, LName From customer WHERE CustID=?;";
+		query2 = "Select CustomerFName, CustomerLName From customer WHERE CustomerID=?;";
 		os = conn.prepareStatement(query2);
 		os.setInt(1, CustID);
 		rset2 = os.executeQuery();
 		while (rset2.next()) {
-			cname2 = rset2.getString("FName") + " " + rset2.getString("LName"); // note the use of field names in the
+			cname2 = rset2.getString("CustomerFName") + " " + rset2.getString("CustomerLName"); // note the use of field names in the
 																				// getSting methods
 		}
 
 		conn.close();
-		return cname1; // OR cname2
+		return cname2; // OR cname1
 	}
 
 	public static void printResultSet(ResultSet resultSet) throws SQLException {
