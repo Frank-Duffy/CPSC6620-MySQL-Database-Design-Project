@@ -270,15 +270,51 @@ public final class DBNinja {
 		 * 
 		*/
 
+		PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        ArrayList<Customer> customerList = new ArrayList<>();
 
-		
-		
-		
-		
-		
-		//DO NOT FORGET TO CLOSE YOUR CONNECTION
-		return null;
+        try {
+            conn = DBConnector.make_connection(); // Assuming DBConnector.make_connection() establishes the database connection
+            String query = "SELECT CustomerID, CustomerFName, CustomerLName, CustomerPhone FROM customer ORDER BY CustomerID";
+            preparedStatement = conn.prepareStatement(query);
+            resultSet = preparedStatement.executeQuery();
+
+            // Process the result set and populate Customer objects
+            while (resultSet.next()) {
+                int customerId = resultSet.getInt("CustomerID");
+                String customerFname = resultSet.getString("CustomerFname");
+                String customerLname = resultSet.getString("CustomerLname");
+                String customerPhone = resultSet.getString("CustomerPhone");
+
+                Customer customer = new Customer(customerId, customerFname, customerLname, customerPhone);
+                customerList.add(customer);
+            }
+        } finally {
+            // Close resources in a finally block to ensure they are always closed
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if (conn != null) {
+                conn.close();
+            }
+        }
+
+        return customerList;
 	}
+
+	public static void printCustomerList(ArrayList<Customer> customerList) {
+        for (Customer customer : customerList) {
+            System.out.printf("CustID=%d | Name=%s %s, Phone=%s\n",
+                    customer.getCustID(),
+                    customer.getFName(),
+                    customer.getLName(),
+                    customer.getPhone());
+        }
+    }
 
 	public static Customer findCustomerByPhone(String phoneNumber){
 		/*
@@ -386,16 +422,16 @@ public final class DBNinja {
 		 * The result should be readable and sorted as indicated in the prompt.
 		 * 
 		 */
+		try (
+			PreparedStatement preparedStatement = conn.prepareStatement("SELECT ToppingNum, ToppingName, ToppingQOH FROM topping");
+			ResultSet resultSet = preparedStatement.executeQuery()) { 
+			printResultSet(resultSet); 
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 
-
-		
-		
-		
-		
-		
-		//DO NOT FORGET TO CLOSE YOUR CONNECTION
-
-
+		//close connection
+		conn.close();
 	}
 	
 	public static void printToppingPopReport() throws SQLException, IOException
@@ -589,5 +625,6 @@ public final class DBNinja {
 			}
 		}
 	}
+
 
 }
