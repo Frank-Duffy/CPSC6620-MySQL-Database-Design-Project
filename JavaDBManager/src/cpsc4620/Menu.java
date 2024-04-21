@@ -407,19 +407,36 @@ public class Menu {
 		 * This should print the current inventory and then ask the user which topping
 		 * (by ID) they want to add more to and how much to add
 		 */
-
-		// User Input Prompts...
-		DBNinja.printInventory(); // Step 1: Print the current inventory
-
-        // Step 2: Prompt the user to enter the topping ID
-        int toppingId = promptForPositiveInteger("Which topping do you want to add inventory to? Enter the topping ID: ");
-
-        // Step 3: Prompt the user to enter the number of units to add
-        int units = promptForPositiveInteger("How many units would you like to add? ");
-
-        // Now we can proceed with adding inventory for the specified topping ID and units
-        // For example: DBNinja.addInventory(toppingId, units);
-    }
+	
+		 try {
+			// Step 1: Fetch topping list and print inventory
+			ArrayList<Topping> toppingList = DBNinja.getToppingList();
+			DBNinja.printInventory();
+	
+			int toppingId;
+			Topping selectedTopping = null;
+	
+			// Step 2: Prompt the user to enter the topping ID (with retry on invalid ID)
+			while (true) {
+				toppingId = promptForPositiveInteger("Which topping do you want to add inventory to? Enter the topping ID: ");
+				selectedTopping = getToppingById(toppingList, toppingId);
+				if (selectedTopping != null) {
+					System.out.println("Selected Topping: " + selectedTopping.getTopName());
+					break; // Exit the loop if a valid topping ID is entered
+				} else {
+					System.out.println("Topping with ID " + toppingId + " not found. Please try again.");
+				}
+			}
+	
+			// Step 3: Prompt the user to enter the number of units to add
+			int units = promptForPositiveInteger("How many units would you like to add? ");
+	
+			// Step 4: Update the database inventory
+			DBNinja.addToInventory(selectedTopping, units);
+		} catch (SQLException | IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	// A method that builds a pizza. Used in our add new order method
 	public static Pizza buildPizza(int orderID) throws SQLException, IOException {
@@ -583,7 +600,7 @@ public class Menu {
 
 	}
 
-//helps with validating common positive integer input input
+	//helps with validating common positive integer input input
 	private static int promptForPositiveInteger(String message) throws IOException {
         while (true) {
             System.out.println(message);
@@ -604,6 +621,16 @@ public class Menu {
 	// DO NOT EDIT ANYTHING BELOW HERE, THIS IS NEEDED TESTING.
 	// IF YOU EDIT SOMETHING BELOW, IT BREAKS THE AUTOGRADER WHICH MEANS YOUR GRADE
 	// WILL BE A 0 (zero)!!
+
+	//helps with extracting Topping objects for Topping ArrayLists
+	public static Topping getToppingById(ArrayList<Topping> toppingList, int topId) {
+		for (Topping topping : toppingList) {
+			if (topping.getTopID() == topId) {
+				return topping;
+			}
+		}
+		return null; // Return null if no topping with the specified ID is found
+	}
 
 	public static void PrintMenu() {
 		System.out.println("\n\nPlease enter a menu option:");
