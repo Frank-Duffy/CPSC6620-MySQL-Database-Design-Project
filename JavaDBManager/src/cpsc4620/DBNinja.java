@@ -475,8 +475,6 @@ public final class DBNinja {
 		//DO NOT FORGET TO CLOSE YOUR CONNECTION	
 	}
 	
-	
-	
 	public static String getCustomerName(int CustID) throws SQLException, IOException
 	{
 	/*
@@ -591,6 +589,5 @@ public final class DBNinja {
 			}
 		}
 	}
-
 
 }
