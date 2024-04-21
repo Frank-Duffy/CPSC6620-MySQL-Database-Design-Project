@@ -75,7 +75,7 @@ SET @OrderId = LAST_INSERT_ID();
 INSERT INTO customer (
     CustomerFName, CustomerLName, CustomerPhone
 ) VALUES (
-    "Matt", "Engers", "864-474-9953"
+    "Matt", "Engers", "8644749953"
 );
 
 -- get the CustomerID from the last pizzaorder
@@ -129,7 +129,7 @@ INSERT INTO customer (
     CustomerFName, CustomerLName, CustomerPhone,
     CustomerStreet, CustomerCity, CustomerState, CustomerZip
 ) VALUES (
-    "Frank", "Turner", "864-474-9953",
+    "Frank", "Turner", "8644749953",
     "6745 Wessex St.", "Anderson", "SC", 29621
 );
 
@@ -177,7 +177,7 @@ SET @OrderId = LAST_INSERT_ID();
 INSERT INTO customer (
     CustomerFName, CustomerLName, CustomerPhone
 ) VALUES (
-    "Andrew", "Wilkes-Krier", "864-254-5861"
+    "Andrew", "Wilkes-Krier", "8642545861"
 );
 
 -- get the CustomerID from the last pizzaorder
@@ -422,7 +422,7 @@ INSERT INTO customer (
     CustomerFName, CustomerLName, CustomerPhone,
     CustomerStreet, CustomerCity, CustomerState, CustomerZip
 ) VALUES (
-    "Milo", "Auckerman", "864-878-5679",
+    "Milo", "Auckerman", "8648785679",
     "8879 Suburban Home", "Anderson", "SC", 29621
 );
 
