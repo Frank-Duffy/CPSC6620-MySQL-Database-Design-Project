@@ -339,15 +339,83 @@ public final class DBNinja {
 		return new Order(2, 0, "dinein", "2024-04-21", 0.0, 0.0, 0);
 	}
 
-
-	public static ArrayList<Order> getOrdersByDate(String date) {
+	public static ArrayList<Order> getOrdersByDate(String date) throws SQLException, IOException{
 		/*
 		 * Query the database for ALL the orders placed on a specific date
 		 * and return a list of those orders.
 		 * 
+		 * A large chunk of this code repeats in getOrders(), namely the while(rs.next()) block. Refactor later.
 		 */
 
-		return null;
+		ArrayList<Order> orders = new ArrayList<>();
+		connect_to_db();
+	
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+	
+		try {
+			String query = "SELECT o.*, d.DineInTableNum, p.PickupCustomerID, de.DeliveryCustomerID, " +
+					"c.CustomerStreet, c.CustomerCity, c.CustomerState, c.CustomerZip " +
+					"FROM pizzaorder o " +
+					"LEFT JOIN dinein d ON o.PizzaOrderNum = d.DineInPizzaOrderNum " +
+					"LEFT JOIN pickup p ON o.PizzaOrderNum = p.PickupPizzaOrderNum " +
+					"LEFT JOIN delivery de ON o.PizzaOrderNum = de.DeliveryPizzaOrderNum " +
+					"LEFT JOIN customer c ON p.PickupCustomerID = c.CustomerID OR de.DeliveryCustomerID = c.CustomerID " +
+					"WHERE DATE(o.PizzaOrderDate) = ? " + // Filter by specific date
+					"ORDER BY o.PizzaOrderDate DESC";
+	
+			stmt = conn.prepareStatement(query);
+			stmt.setString(1, date); // Set the parameter value
+			rs = stmt.executeQuery();
+	
+			while (rs.next()) {
+				int orderNum = rs.getInt("PizzaOrderNum");
+				double price = rs.getDouble("PizzaOrderPrice");
+				double cost = rs.getDouble("PizzaOrderCost");
+				Timestamp orderTimestamp = rs.getTimestamp("PizzaOrderDate");
+				boolean isComplete = rs.getBoolean("PizzaOrderComplete");
+				String orderType = rs.getString("PizzaOrderType");
+				
+				// Convert Date to formatted string
+				String orderDateString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(orderTimestamp);
+
+        		// Map boolean isComplete to int (0 or 1)
+        		int isCompleteInt = isComplete ? 1 : 0;
+				
+				Order order;
+				switch (orderType) {
+					case "DineIn":
+						int tableNum = rs.getInt("DineInTableNum");
+						order = new DineinOrder(orderNum, 0, orderDateString, cost, price, isCompleteInt, tableNum);
+						break;
+					case "PickUp":
+						int pickupCustomerID = rs.getInt("PickupCustomerID");
+						int isPickedUp = 0;
+						order = new PickupOrder(orderNum, pickupCustomerID, orderDateString, price, cost, isPickedUp, isCompleteInt);
+						break;
+					case "Delivery":
+						int deliveryCustomerID = rs.getInt("DeliveryCustomerID");
+						String customerStreet = rs.getString("CustomerStreet");
+						String customerCity = rs.getString("CustomerCity");
+						String customerState = rs.getString("CustomerState");
+						int customerZip = rs.getInt("CustomerZip");
+						String customerAddress = customerStreet + ", " + customerCity + ", " + customerState + " " + customerZip;
+						order = new DeliveryOrder(orderNum, deliveryCustomerID, orderDateString, price, cost, isCompleteInt, customerAddress);
+						break;
+					default:
+						continue;
+				}
+				orders.add(order);
+			}
+		} catch (SQLException e) {
+			System.out.println("SQL Exception: " + e.getMessage());
+			throw e;
+		} finally {
+			if (rs != null) try { rs.close(); } catch (SQLException e) { e.printStackTrace(); }
+			if (stmt != null) try { stmt.close(); } catch (SQLException e) { e.printStackTrace(); }
+			if (conn != null) try { conn.close(); } catch (SQLException e) { e.printStackTrace(); }
+		}
+		return orders;
 	}
 
 	public static ArrayList<Discount> getDiscountList() throws SQLException, IOException {

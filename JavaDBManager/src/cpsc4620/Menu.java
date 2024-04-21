@@ -314,11 +314,9 @@ public class Menu {
 				order_list.removeIf(order -> order.getIsComplete() != 1);
 				break;
 			case "d":
-
 				System.out.println("What is the date you want to restrict by? (FORMAT= YYYY-MM-DD)");
 				String date = reader.readLine();
 				order_list = DBNinja.getOrdersByDate(date);
-
 				break;
 			default:
 				System.out.println("I don't understand that input, returning to menu");
