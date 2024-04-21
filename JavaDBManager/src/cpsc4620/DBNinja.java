@@ -410,12 +410,39 @@ public final class DBNinja {
 		 * 
 		 */
 
-
+		 try (
+			// SQL query with placeholders
+			PreparedStatement preparedStatement = conn.prepareStatement("SELECT * FROM ToppingPopularity");
+			// Executing the query
+			ResultSet resultSet = preparedStatement.executeQuery()
+		) {
+			// Get metadata to retrieve column names
+			ResultSetMetaData metaData = resultSet.getMetaData();
+			int columnCount = metaData.getColumnCount();
+			// Printing column names
+			for (int i = 1; i <= columnCount; i++) {
+				System.out.print(metaData.getColumnName(i));
+				if (i < columnCount) {
+					System.out.print(", ");
+				}
+			}
+			System.out.println(); // New line after column names
+			// Printing the result set
+			while (resultSet.next()) {
+				// Print entire row
+				for (int i = 1; i <= columnCount; i++) {
+					System.out.print(resultSet.getString(i));
+					if (i < columnCount) {
+						System.out.print(", ");
+					}
+				}
+				System.out.println(); // New line after each row
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		
-		
-		
-		
-		
+		conn.close();
 		//DO NOT FORGET TO CLOSE YOUR CONNECTION
 	}
 	
