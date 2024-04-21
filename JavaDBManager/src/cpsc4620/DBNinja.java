@@ -385,19 +385,40 @@ public final class DBNinja {
 	}
 
 	public static void addToInventory(Topping t, double quantity) throws SQLException, IOException {
-		connect_to_db();
 		/*
 		 * Updates the quantity of the topping in the database by the amount specified.
 		 * 
 		 * */
 
+		connect_to_db(); // Establish database connection
+		PreparedStatement preparedStatement = null;
+	
+		try {
 
-		
-		
-		
-		
-		
-		//DO NOT FORGET TO CLOSE YOUR CONNECTION
+			// Prepare the SQL update statement to increment the ToppingQOH by the specified quantity
+			String query = "UPDATE topping SET ToppingQOH = ToppingQOH + ? WHERE ToppingNum = ?";
+			preparedStatement = conn.prepareStatement(query);
+	
+			// Set the parameters for the prepared statement
+			preparedStatement.setDouble(1, quantity);
+			preparedStatement.setInt(2, t.getTopID());
+	
+			// Execute the update statement
+			int rowsAffected = preparedStatement.executeUpdate();
+			if (rowsAffected > 0) {
+				System.out.println("Inventory updated successfully for topping: " + t.getTopName());
+			} else {
+				System.out.println("No rows were updated. Topping may not exist in the database.");
+			}
+		} finally {
+			// Close resources in a finally block to ensure they are always closed
+			if (preparedStatement != null) {
+				preparedStatement.close();
+			}
+			if (conn != null) {
+				conn.close();
+			}
+		}
 	}
 	
 	public static double getBaseCustPrice(String size, String crust) throws SQLException, IOException {
@@ -431,13 +452,14 @@ public final class DBNinja {
 	}
 
 	public static void printInventory() throws SQLException, IOException {
-		connect_to_db();
 		/*
 		 * Queries the database and prints the current topping list with quantities.
 		 *  
 		 * The result should be readable and sorted as indicated in the prompt.
 		 * 
 		 */
+
+		connect_to_db(); //Establish connection to db.
 		try (
 			PreparedStatement preparedStatement = conn.prepareStatement("SELECT ToppingNum, ToppingName, ToppingQOH FROM topping");
 			ResultSet resultSet = preparedStatement.executeQuery()) { 
