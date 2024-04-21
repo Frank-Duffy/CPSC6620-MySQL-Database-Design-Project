@@ -97,18 +97,22 @@ public class Menu {
 		 */
 
 		// User Input Prompts...
+		// DBNinja.addOrder(new Order(0, -1, "dinein", "df", 0.0, 0.0, 0));
+
 		System.out.println(
 				"Is this order for: \n1.) Dine-in\n2.) Pick-up\n3.) Delivery\nEnter the number of your choice:");
 		String option = reader.readLine();
 		int order_option = Integer.parseInt(option);
 		String existing_customer = "";
-		Order order = null;
+		Order order = new Order(0, 0, "", "", 0.0, 0.0, 0);
+		int customer = -1;
 		switch (order_option) {
 			case 1:
 				order.setOrderType("dine-in");
 				System.out.println("What is the table number for this order?");
 				String table_num_string = reader.readLine();
 				int table_num = Integer.parseInt(table_num_string);
+				order.setCustID(-1);
 				break;
 			case 2:
 				order.setOrderType("pick-up");
@@ -154,7 +158,7 @@ public class Menu {
 					viewCustomers();
 					System.out.println("Which customer is this order for? Enter ID Number:");
 					String customer_string = reader.readLine();
-					int customer = Integer.parseInt(option);
+					customer = Integer.parseInt(option);
 
 				} else {
 					System.out.println("What is this customer's name (first <space> last");
@@ -188,7 +192,7 @@ public class Menu {
 				break;
 		}
 		System.out.println("Let's build a pizza!");
-
+		DBNinja.addOrder(order);
 		buildPizza(1);
 
 		System.out.println(
@@ -241,12 +245,12 @@ public class Menu {
 		 * Simply print out all of the customers from the database.
 		 */
 
-		 try {
-            ArrayList<Customer> customerList = DBNinja.getCustomerList();
-            DBNinja.printCustomerList(customerList);
-        } catch (SQLException | IOException e) {
-            e.printStackTrace();
-        }
+		try {
+			ArrayList<Customer> customerList = DBNinja.getCustomerList();
+			DBNinja.printCustomerList(customerList);
+		} catch (SQLException | IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	// Enter a new customer in the database
@@ -399,7 +403,7 @@ public class Menu {
 		 * Print the inventory. Display the topping ID, name, and current inventory
 		 */
 
-		 DBNinja.printInventory();
+		DBNinja.printInventory();
 	}
 
 	public static void AddInventory() throws SQLException, IOException {
