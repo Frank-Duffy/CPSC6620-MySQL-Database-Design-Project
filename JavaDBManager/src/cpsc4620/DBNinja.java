@@ -42,9 +42,6 @@ public final class DBNinja {
 	public final static String crust_pan = "Pan";
 	public final static String crust_gf = "Gluten-Free";
 
-
-
-	
 	private static boolean connect_to_db() throws SQLException, IOException {
 
 		try {
@@ -58,7 +55,6 @@ public final class DBNinja {
 
 	}
 
-	
 	public static void addOrder(Order o) throws SQLException, IOException 
 	{
 		connect_to_db();
@@ -91,7 +87,6 @@ public final class DBNinja {
 		//DO NOT FORGET TO CLOSE YOUR CONNECTION
 	}
 	
-	
 	public static void useTopping(Pizza p, Topping t, boolean isDoubled) throws SQLException, IOException //this method will update toppings inventory in SQL and add entities to the Pizzatops table. Pass in the p pizza that is using t topping
 	{
 		connect_to_db();
@@ -113,8 +108,7 @@ public final class DBNinja {
 		
 		//DO NOT FORGET TO CLOSE YOUR CONNECTION
 	}
-	
-	
+
 	public static void usePizzaDiscount(Pizza p, Discount d) throws SQLException, IOException
 	{
 		connect_to_db();
@@ -178,7 +172,6 @@ public final class DBNinja {
 		
 		//DO NOT FORGET TO CLOSE YOUR CONNECTION
 	}
-
 
 	public static ArrayList<Order> getOrders(boolean openOnly) throws SQLException, IOException {
 		connect_to_db();
@@ -261,7 +254,6 @@ public final class DBNinja {
 		 return null;
 	}
 
-
 	public static ArrayList<Customer> getCustomerList() throws SQLException, IOException {
 		connect_to_db();
 		/*
@@ -331,7 +323,6 @@ public final class DBNinja {
 		 return null;
 	}
 
-
 	public static ArrayList<Topping> getToppingList() throws SQLException, IOException {
 		connect_to_db();
 		/*
@@ -366,7 +357,6 @@ public final class DBNinja {
 
 		 return null;
 	}
-
 
 	public static void addToInventory(Topping t, double quantity) throws SQLException, IOException {
 		connect_to_db();

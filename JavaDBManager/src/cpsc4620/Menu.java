@@ -409,15 +409,17 @@ public class Menu {
 		 */
 
 		// User Input Prompts...
-		System.out.println("Which topping do you want to add inventory to? Enter the number: ");
-		String topping_string = reader.readLine();
-		int topping = Integer.parseInt(topping_string);
-		System.out.println("How many units would you like to add? ");
-		String units_string = reader.readLine();
-		int units = Integer.parseInt(units_string);
-		System.out.println("Incorrect entry, not an option");
+		DBNinja.printInventory(); // Step 1: Print the current inventory
 
-	}
+        // Step 2: Prompt the user to enter the topping ID
+        int toppingId = promptForPositiveInteger("Which topping do you want to add inventory to? Enter the topping ID: ");
+
+        // Step 3: Prompt the user to enter the number of units to add
+        int units = promptForPositiveInteger("How many units would you like to add? ");
+
+        // Now we can proceed with adding inventory for the specified topping ID and units
+        // For example: DBNinja.addInventory(toppingId, units);
+    }
 
 	// A method that builds a pizza. Used in our add new order method
 	public static Pizza buildPizza(int orderID) throws SQLException, IOException {
@@ -580,6 +582,23 @@ public class Menu {
 		}
 
 	}
+
+//helps with validating common positive integer input input
+	private static int promptForPositiveInteger(String message) throws IOException {
+        while (true) {
+            System.out.println(message);
+            String input = reader.readLine();
+            try {
+                int value = Integer.parseInt(input);
+                if (value <= 0) {
+                    throw new NumberFormatException();
+                }
+                return value;
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid entry: Please enter a positive integer.");
+            }
+        }
+    }
 
 	// Prompt - NO CODE SHOULD TAKE PLACE BELOW THIS LINE
 	// DO NOT EDIT ANYTHING BELOW HERE, THIS IS NEEDED TESTING.
