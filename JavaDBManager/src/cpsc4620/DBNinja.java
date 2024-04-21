@@ -412,32 +412,8 @@ public final class DBNinja {
 
 		 try (
 			PreparedStatement preparedStatement = conn.prepareStatement("SELECT * FROM ToppingPopularity");
-			ResultSet resultSet = preparedStatement.executeQuery()
-		) {
-			ResultSetMetaData metaData = resultSet.getMetaData();
-			int columnCount = metaData.getColumnCount();
-
-			// Print column headers
-			for (int i = 1; i <= columnCount; i++) {
-				String columnName = metaData.getColumnName(i);
-				System.out.printf("%-20s", columnName); // Adjust width as needed
-			}
-			System.out.println(); // New line after column headers
-
-			// Print separator line
-			for (int i = 1; i <= columnCount; i++) {
-				System.out.print("".format("%-20s", "").replace(' ', '-')); // Adjust width as needed
-			}
-			System.out.println(); // New line after separator line
-
-			// Print data rows
-			while (resultSet.next()) {
-				for (int i = 1; i <= columnCount; i++) {
-					String columnValue = resultSet.getString(i);
-					System.out.printf("%-20s", columnValue); // Adjust width as needed
-				}
-				System.out.println(); // New line after each row
-			}
+			ResultSet resultSet = preparedStatement.executeQuery()) { 
+			printResultSet(resultSet); 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -535,6 +511,33 @@ public final class DBNinja {
 		conn.close();
 		return cname1; // OR cname2
 	}
+
+	public static void printResultSet(ResultSet resultSet) throws SQLException {
+        ResultSetMetaData metaData = resultSet.getMetaData();
+        int columnCount = metaData.getColumnCount();
+
+        // Print column headers
+        for (int i = 1; i <= columnCount; i++) {
+            String columnName = metaData.getColumnName(i);
+            System.out.printf("%-20s", columnName); // Adjust width as needed
+        }
+        System.out.println(); // New line after column headers
+
+        // Print separator line
+        for (int i = 1; i <= columnCount; i++) {
+            System.out.print("".format("%-20s", "").replace(' ', '-')); // Adjust width as needed
+        }
+        System.out.println(); // New line after separator line
+
+        // Print data rows
+        while (resultSet.next()) {
+            for (int i = 1; i <= columnCount; i++) {
+                String columnValue = resultSet.getString(i);
+                System.out.printf("%-20s", columnValue); // Adjust width as needed
+            }
+            System.out.println(); // New line after each row
+        }
+    }
 
 	/*
 	 * The next 3 private methods help get the individual components of a SQL datetime object. 
