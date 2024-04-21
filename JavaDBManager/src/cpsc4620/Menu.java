@@ -241,6 +241,12 @@ public class Menu {
 		 * Simply print out all of the customers from the database.
 		 */
 
+		 try {
+            ArrayList<Customer> customerList = DBNinja.getCustomerList();
+            DBNinja.printCustomerList(customerList);
+        } catch (SQLException | IOException e) {
+            e.printStackTrace();
+        }
 	}
 
 	// Enter a new customer in the database
@@ -393,6 +399,7 @@ public class Menu {
 		 * Print the inventory. Display the topping ID, name, and current inventory
 		 */
 
+		 DBNinja.printInventory();
 	}
 
 	public static void AddInventory() throws SQLException, IOException {
