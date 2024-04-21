@@ -208,6 +208,7 @@ public final class DBNinja {
 		 return null;
 	}
 
+
 	public static ArrayList<Order> getOrdersByDate(String date){
 		/*
 		 * Query the database for ALL the orders placed on a specific date
@@ -375,6 +376,8 @@ public final class DBNinja {
 		 * If found, then return a Topping object for the topping.
 		 * If it's not found....then return null
 		 *  
+		 * Probably useful for building a pizza for an order. Normally given ToppingName but need ToppingNum 
+		 * to construct associated pizza entities.
 		 */
 		
 
