@@ -434,11 +434,16 @@ public final class DBNinja {
 		 * 
 		 */
 		
-		
-		
-		
-		
-		//DO NOT FORGET TO CLOSE YOUR CONNECTION
+		 try (
+			PreparedStatement preparedStatement = conn.prepareStatement("SELECT * FROM ProfitByPizza");
+			ResultSet resultSet = preparedStatement.executeQuery()) { 
+			printResultSet(resultSet); 
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		//close connection
+		conn.close();
 	}
 	
 	public static void printProfitByOrderType() throws SQLException, IOException
@@ -453,7 +458,16 @@ public final class DBNinja {
 		 * 
 		 */
 		
-		
+		 try (
+			PreparedStatement preparedStatement = conn.prepareStatement("SELECT * FROM ProfitByOrderType");
+			ResultSet resultSet = preparedStatement.executeQuery()) { 
+			printResultSet(resultSet); 
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		//close connection
+		conn.close();
 		
 		
 		
