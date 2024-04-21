@@ -324,24 +324,50 @@ public final class DBNinja {
 	}
 
 	public static ArrayList<Topping> getToppingList() throws SQLException, IOException {
-		connect_to_db();
-		/*
-		 * Query the database for the aviable toppings and 
-		 * return an arrayList of all the available toppings. 
-		 * Don't forget to order the data coming from the database appropriately.
-		 * 
-		 */
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        ArrayList<Topping> toppingList = new ArrayList<>();
 
-		
+        try {
+			connect_to_db();
 
-		
-		
-		
-		
-		
-		//DO NOT FORGET TO CLOSE YOUR CONNECTION
-		return null;
-	}
+            // Prepare the SQL query to retrieve available toppings
+            String query = "SELECT * FROM topping ORDER BY ToppingNum";
+            preparedStatement = conn.prepareStatement(query);
+            resultSet = preparedStatement.executeQuery();
+
+            // Process the result set and populate Topping objects
+             // Process the result set and populate Topping objects
+            while (resultSet.next()) {
+                int topID = resultSet.getInt("ToppingNum");
+                String topName = resultSet.getString("ToppingName");
+                double perAMT = resultSet.getDouble("ToppingPersonal");
+                double medAMT = resultSet.getDouble("ToppingMedium");
+                double lgAMT = resultSet.getDouble("ToppingLarge");
+                double xLAMT = resultSet.getDouble("ToppingXLarge");
+                double custPrice = resultSet.getDouble("ToppingPrice");
+                double busPrice = resultSet.getDouble("ToppingCost");
+                int minINVT = resultSet.getInt("ToppingMinQOH");
+                int curINVT = resultSet.getInt("ToppingQOH");
+
+                Topping topping = new Topping(topID, topName, perAMT, medAMT, lgAMT, xLAMT, custPrice, busPrice, minINVT, curINVT);
+                toppingList.add(topping);
+            }
+        } finally {
+            // Close resources in a finally block to ensure they are always closed
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if (conn != null) {
+                conn.close();
+            }
+        }
+
+        return toppingList;
+    }
 
 	public static Topping findToppingByName(String name){
 		/*
