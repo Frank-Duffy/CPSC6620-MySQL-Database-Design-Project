@@ -411,39 +411,39 @@ public final class DBNinja {
 		 */
 
 		 try (
-			// SQL query with placeholders
 			PreparedStatement preparedStatement = conn.prepareStatement("SELECT * FROM ToppingPopularity");
-			// Executing the query
 			ResultSet resultSet = preparedStatement.executeQuery()
 		) {
-			// Get metadata to retrieve column names
 			ResultSetMetaData metaData = resultSet.getMetaData();
 			int columnCount = metaData.getColumnCount();
-			// Printing column names
+
+			// Print column headers
 			for (int i = 1; i <= columnCount; i++) {
-				System.out.print(metaData.getColumnName(i));
-				if (i < columnCount) {
-					System.out.print(", ");
-				}
+				String columnName = metaData.getColumnName(i);
+				System.out.printf("%-20s", columnName); // Adjust width as needed
 			}
-			System.out.println(); // New line after column names
-			// Printing the result set
+			System.out.println(); // New line after column headers
+
+			// Print separator line
+			for (int i = 1; i <= columnCount; i++) {
+				System.out.print("".format("%-20s", "").replace(' ', '-')); // Adjust width as needed
+			}
+			System.out.println(); // New line after separator line
+
+			// Print data rows
 			while (resultSet.next()) {
-				// Print entire row
 				for (int i = 1; i <= columnCount; i++) {
-					System.out.print(resultSet.getString(i));
-					if (i < columnCount) {
-						System.out.print(", ");
-					}
+					String columnValue = resultSet.getString(i);
+					System.out.printf("%-20s", columnValue); // Adjust width as needed
 				}
 				System.out.println(); // New line after each row
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
+
+		//close connection
 		conn.close();
-		//DO NOT FORGET TO CLOSE YOUR CONNECTION
 	}
 	
 	public static void printProfitByPizzaReport() throws SQLException, IOException
