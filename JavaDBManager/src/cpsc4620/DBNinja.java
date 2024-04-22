@@ -62,6 +62,8 @@ public final class DBNinja {
 		connect_to_db();
 
 		// TODO Implement converted present time to date string
+		String orderDateString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+
 		System.out.println(String.format(
 				"INSERT INTO Part2.pizzaorder VALUES (%d, %.2f, %.2f, ?, %d, ?);",
 				0,
@@ -71,16 +73,17 @@ public final class DBNinja {
 						"INSERT INTO Part2.pizzaorder VALUES (%d, %.2f, %.2f, ?, %d, ?);",
 						0,
 						0.0, 0.0, 0, o.getOrderType()));
-		os.setString(1, "2024-04-21");
+		os.setString(1, orderDateString);
 		os.setString(2, o.getOrderType());
 		os.executeUpdate();
 		// Below commented code prints out the order dates, intended to check for
 		// accuracy of insert
-		PreparedStatement check = conn.prepareStatement("SELECT * FROM Part2.pizzaorder");
-		ResultSet rset2 = check.executeQuery();
-		while (rset2.next()) {
-			System.out.println(rset2.getString("PizzaOrderDate"));
-		}
+		// PreparedStatement check = conn.prepareStatement("SELECT * FROM
+		// Part2.pizzaorder");
+		// ResultSet rset2 = check.executeQuery();
+		// while (rset2.next()) {
+		// System.out.println(rset2.getString("PizzaOrderDate"));
+		// }
 
 		conn.close();
 		/*
@@ -140,21 +143,8 @@ public final class DBNinja {
 	}
 
 	public static void useTopping(Pizza p, Topping t, boolean isDoubled) throws SQLException, IOException // this method
-																											// will
-																											// update
-																											// toppings
-																											// inventory
-																											// in SQL
-																											// and add
-																											// entities
-																											// to the
-																											// Pizzatops
-																											// table.
-																											// Pass in
-																											// the p
-																											// pizza
-																											// that is
 																											// using t
+																											// //
 																											// topping
 	{
 		connect_to_db();
@@ -169,7 +159,44 @@ public final class DBNinja {
 		 * with BEFORE calling this method.
 		 * 
 		 */
+		double amount_to_subtract = 0.0;
 
+		switch (p.getSize()) {
+			case size_s:
+				amount_to_subtract = t.getPerAMT();
+				break;
+			case size_m:
+				amount_to_subtract = t.getMedAMT();
+				break;
+			case size_l:
+				amount_to_subtract = t.getLgAMT();
+				break;
+			case size_xl:
+				amount_to_subtract = t.getXLAMT();
+				break;
+		}
+		if (isDoubled) {
+			amount_to_subtract *= 2;
+		}
+		PreparedStatement os = conn
+				.prepareStatement(
+						String.format("UPDATE Part2.topping SET ToppingQOH=ToppingQOH-%.2f WHERE ToppingNum=%d;",
+								amount_to_subtract, t.getTopID()));
+		os.executeUpdate();
+		PreparedStatement add_bridge = conn.prepareStatement(String.format(
+				"INSERT INTO Part2.pizzatopping VALUES (%d,%d,%d);", p.getPizzaID(), t.getTopID(), isDoubled ? 1 : 0));
+		add_bridge.executeUpdate();
+		// Below commented code prints out the pizza topping bridge, intended to check
+		// for
+		// accuracy of insert
+		PreparedStatement check = conn.prepareStatement("SELECT * FROM Part2.pizzatopping");
+		ResultSet rset2 = check.executeQuery();
+		while (rset2.next()) {
+			System.out.println(rset2.getString("PizzaToppingToppingNum"));
+			System.out.println(rset2.getString("PizzaToppingPizzaNum"));
+			System.out.println("");
+		}
+		conn.close();
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 	}
 
@@ -239,7 +266,11 @@ public final class DBNinja {
 		 * the database.
 		 * 
 		 */
-
+		System.out.println(o.getOrderID());
+		PreparedStatement os = conn.prepareStatement(String
+				.format("UPDATE Part2.pizzaorder SET PizzaOrderComplete=True WHERE PizzaOrderNum=%d;", o.getOrderID()));
+		os.executeUpdate();
+		conn.close();
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 	}
 
@@ -257,50 +288,51 @@ public final class DBNinja {
 		 * 
 		 */
 
-		 ArrayList<Order> orders = new ArrayList<>();
-		 connect_to_db();
- 
-		 PreparedStatement stmt = null;
-		 ResultSet rs = null;
- 
-		 try {
+		ArrayList<Order> orders = new ArrayList<>();
+		connect_to_db();
+
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+
+		try {
 			String query = "SELECT o.*, d.DineInTableNum, p.PickupCustomerID, de.DeliveryCustomerID, " +
-				"c.CustomerStreet, c.CustomerCity, c.CustomerState, c.CustomerZip " +
-				"FROM pizzaorder o " +
-				"LEFT JOIN dinein d ON o.PizzaOrderNum = d.DineInPizzaOrderNum " +
-				"LEFT JOIN pickup p ON o.PizzaOrderNum = p.PickupPizzaOrderNum " +
-				"LEFT JOIN delivery de ON o.PizzaOrderNum = de.DeliveryPizzaOrderNum " +
-				"LEFT JOIN customer c ON p.PickupCustomerID = c.CustomerID OR de.DeliveryCustomerID = c.CustomerID " +
-				(openOnly ? "WHERE o.PizzaOrderComplete = FALSE " : "") +
-				"ORDER BY o.PizzaOrderDate DESC";
- 
+					"c.CustomerStreet, c.CustomerCity, c.CustomerState, c.CustomerZip " +
+					"FROM Part2.pizzaorder o " +
+					"LEFT JOIN Part2.dinein d ON o.PizzaOrderNum = d.DineInPizzaOrderNum " +
+					"LEFT JOIN Part2.pickup p ON o.PizzaOrderNum = p.PickupPizzaOrderNum " +
+					"LEFT JOIN Part2.delivery de ON o.PizzaOrderNum = de.DeliveryPizzaOrderNum " +
+					"LEFT JOIN Part2.customer c ON p.PickupCustomerID = c.CustomerID OR de.DeliveryCustomerID = c.CustomerID "
+					+
+					(openOnly ? "WHERE o.PizzaOrderComplete = FALSE " : "") +
+					"ORDER BY o.PizzaOrderDate DESC";
+
 			stmt = conn.prepareStatement(query);
 			rs = stmt.executeQuery();
- 
+
 			while (rs.next()) {
 				int orderNum = rs.getInt("PizzaOrderNum");
 				double price = rs.getDouble("PizzaOrderPrice");
 				double cost = rs.getDouble("PizzaOrderCost");
 				Timestamp orderTimestamp = rs.getTimestamp("PizzaOrderDate");
-				boolean isComplete = rs.getBoolean("PizzaOrderComplete");
+				int isComplete = rs.getInt("PizzaOrderComplete");
 				String orderType = rs.getString("PizzaOrderType");
-				
+
 				// Convert Date to formatted string
 				String orderDateString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(orderTimestamp);
 
-        		// Map boolean isComplete to int (0 or 1)
-        		int isCompleteInt = isComplete ? 1 : 0;
-				
+				// Map boolean isComplete to int (0 or 1)
+				// int isCompleteInt = isComplete ? 1 : 0;
+
 				Order order;
 				switch (orderType) {
 					case "DineIn":
 						int tableNum = rs.getInt("DineInTableNum");
-						order = new DineinOrder(orderNum, 0, orderDateString, cost, price, isCompleteInt, tableNum);
+						order = new DineinOrder(orderNum, 0, orderDateString, cost, price, isComplete, tableNum);
 						break;
 					case "PickUp":
 						int pickupCustomerID = rs.getInt("PickupCustomerID");
-						int isPickedUp = 0;
-						order = new PickupOrder(orderNum, pickupCustomerID, orderDateString, price, cost, isPickedUp, isCompleteInt);
+						order = new PickupOrder(orderNum, pickupCustomerID, orderDateString, price, cost, isComplete,
+								isComplete);
 						break;
 					case "Delivery":
 						int deliveryCustomerID = rs.getInt("DeliveryCustomerID");
@@ -308,8 +340,10 @@ public final class DBNinja {
 						String customerCity = rs.getString("CustomerCity");
 						String customerState = rs.getString("CustomerState");
 						int customerZip = rs.getInt("CustomerZip");
-						String customerAddress = customerStreet + ", " + customerCity + ", " + customerState + " " + customerZip;
-						order = new DeliveryOrder(orderNum, deliveryCustomerID, orderDateString, price, cost, isCompleteInt, customerAddress);
+						String customerAddress = customerStreet + ", " + customerCity + ", " + customerState + " "
+								+ customerZip;
+						order = new DeliveryOrder(orderNum, deliveryCustomerID, orderDateString, price, cost,
+								isComplete, customerAddress);
 						break;
 					default:
 						continue;
@@ -320,39 +354,63 @@ public final class DBNinja {
 			System.out.println("SQL Exception: " + e.getMessage());
 			throw e;
 		} finally {
-			if (rs != null) try { rs.close(); } catch (SQLException e) { e.printStackTrace(); }
-			if (stmt != null) try { stmt.close(); } catch (SQLException e) { e.printStackTrace(); }
-			if (conn != null) try { conn.close(); } catch (SQLException e) { e.printStackTrace(); }
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			if (stmt != null)
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 		}
 		return orders;
 	}
 
-	public static Order getLastOrder() {
+	public static Order getLastOrder() throws SQLException, IOException {
 		/*
 		 * Query the database for the LAST order added
 		 * then return an Order object for that order.
 		 * NOTE...there should ALWAYS be a "last order"!
 		 */
-		// TODO Finish this function, present info is just a placeholder to test
-		// addPizza function
+		int maxID = 0;
+		Order lastOrder = null;
+		ArrayList<Order> orderList = getOrders(false);
 
-		return new Order(2, 0, "dinein", "2024-04-21", 0.0, 0.0, 0);
+		for (Order i : orderList) {
+			if (maxID < i.getOrderID()) {
+				maxID = i.getOrderID();
+				lastOrder = i;
+			}
+		}
+		return lastOrder;
+
 	}
 
-	public static ArrayList<Order> getOrdersByDate(String date) throws SQLException, IOException{
+	public static ArrayList<Order> getOrdersByDate(String date) throws SQLException, IOException {
 		/*
 		 * Query the database for ALL the orders placed on a specific date
 		 * and return a list of those orders.
 		 * 
-		 * A large chunk of this code repeats in getOrders(), namely the while(rs.next()) block. Refactor later.
+		 * A large chunk of this code repeats in getOrders(), namely the
+		 * while(rs.next()) block. Refactor later.
 		 */
 
 		ArrayList<Order> orders = new ArrayList<>();
 		connect_to_db();
-	
+
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
-	
+
 		try {
 			String query = "SELECT o.*, d.DineInTableNum, p.PickupCustomerID, de.DeliveryCustomerID, " +
 					"c.CustomerStreet, c.CustomerCity, c.CustomerState, c.CustomerZip " +
@@ -360,14 +418,15 @@ public final class DBNinja {
 					"LEFT JOIN dinein d ON o.PizzaOrderNum = d.DineInPizzaOrderNum " +
 					"LEFT JOIN pickup p ON o.PizzaOrderNum = p.PickupPizzaOrderNum " +
 					"LEFT JOIN delivery de ON o.PizzaOrderNum = de.DeliveryPizzaOrderNum " +
-					"LEFT JOIN customer c ON p.PickupCustomerID = c.CustomerID OR de.DeliveryCustomerID = c.CustomerID " +
+					"LEFT JOIN customer c ON p.PickupCustomerID = c.CustomerID OR de.DeliveryCustomerID = c.CustomerID "
+					+
 					"WHERE DATE(o.PizzaOrderDate) = ? " + // Filter by specific date
 					"ORDER BY o.PizzaOrderDate DESC";
-	
+
 			stmt = conn.prepareStatement(query);
 			stmt.setString(1, date); // Set the parameter value
 			rs = stmt.executeQuery();
-	
+
 			while (rs.next()) {
 				int orderNum = rs.getInt("PizzaOrderNum");
 				double price = rs.getDouble("PizzaOrderPrice");
@@ -375,13 +434,13 @@ public final class DBNinja {
 				Timestamp orderTimestamp = rs.getTimestamp("PizzaOrderDate");
 				boolean isComplete = rs.getBoolean("PizzaOrderComplete");
 				String orderType = rs.getString("PizzaOrderType");
-				
+
 				// Convert Date to formatted string
 				String orderDateString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(orderTimestamp);
 
-        		// Map boolean isComplete to int (0 or 1)
-        		int isCompleteInt = isComplete ? 1 : 0;
-				
+				// Map boolean isComplete to int (0 or 1)
+				int isCompleteInt = isComplete ? 1 : 0;
+
 				Order order;
 				switch (orderType) {
 					case "DineIn":
@@ -391,7 +450,8 @@ public final class DBNinja {
 					case "PickUp":
 						int pickupCustomerID = rs.getInt("PickupCustomerID");
 						int isPickedUp = 0;
-						order = new PickupOrder(orderNum, pickupCustomerID, orderDateString, price, cost, isPickedUp, isCompleteInt);
+						order = new PickupOrder(orderNum, pickupCustomerID, orderDateString, price, cost, isPickedUp,
+								isCompleteInt);
 						break;
 					case "Delivery":
 						int deliveryCustomerID = rs.getInt("DeliveryCustomerID");
@@ -399,8 +459,10 @@ public final class DBNinja {
 						String customerCity = rs.getString("CustomerCity");
 						String customerState = rs.getString("CustomerState");
 						int customerZip = rs.getInt("CustomerZip");
-						String customerAddress = customerStreet + ", " + customerCity + ", " + customerState + " " + customerZip;
-						order = new DeliveryOrder(orderNum, deliveryCustomerID, orderDateString, price, cost, isCompleteInt, customerAddress);
+						String customerAddress = customerStreet + ", " + customerCity + ", " + customerState + " "
+								+ customerZip;
+						order = new DeliveryOrder(orderNum, deliveryCustomerID, orderDateString, price, cost,
+								isCompleteInt, customerAddress);
 						break;
 					default:
 						continue;
@@ -411,9 +473,24 @@ public final class DBNinja {
 			System.out.println("SQL Exception: " + e.getMessage());
 			throw e;
 		} finally {
-			if (rs != null) try { rs.close(); } catch (SQLException e) { e.printStackTrace(); }
-			if (stmt != null) try { stmt.close(); } catch (SQLException e) { e.printStackTrace(); }
-			if (conn != null) try { conn.close(); } catch (SQLException e) { e.printStackTrace(); }
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			if (stmt != null)
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 		}
 		return orders;
 	}
@@ -497,14 +574,19 @@ public final class DBNinja {
 		}
 	}
 
-	public static Customer findCustomerByPhone(String phoneNumber) {
+	public static Customer findCustomerByPhone(String phoneNumber) throws SQLException, IOException {
 		/*
 		 * Query the database for a customer using a phone number.
 		 * If found, then return a Customer object for the customer.
 		 * If it's not found....then return null
 		 * 
 		 */
-
+		ArrayList<Customer> customers = getCustomerList();
+		for (Customer i : customers) {
+			if (i.getPhone().equals(phoneNumber)) {
+				return i;
+			}
+		}
 		return null;
 	}
 
@@ -555,16 +637,22 @@ public final class DBNinja {
 		return toppingList;
 	}
 
-	public static Topping findToppingByName(String name) {
+	public static Topping findToppingByName(String name) throws SQLException, IOException {
 		/*
 		 * Query the database for the topping using it's name.
 		 * If found, then return a Topping object for the topping.
 		 * If it's not found....then return null
-		 *  
-		 * Probably useful for building a pizza for an order. Normally given ToppingName but need ToppingNum 
+		 * 
+		 * Probably useful for building a pizza for an order. Normally given ToppingName
+		 * but need ToppingNum
 		 * to construct associated pizza entities.
 		 */
-
+		ArrayList<Topping> topping_list = getToppingList();
+		for (Topping i : topping_list) {
+			if (i.getTopName().equals(name)) {
+				return i;
+			}
+		}
 		return null;
 	}
 
@@ -736,18 +824,20 @@ public final class DBNinja {
 		connect_to_db();
 
 		// /*
-		//  * an example query using a constructed string...
-		//  * remember, this style of query construction could be subject to sql injection
-		//  * attacks!
-		//  * 
-		//  */
+		// * an example query using a constructed string...
+		// * remember, this style of query construction could be subject to sql
+		// injection
+		// * attacks!
+		// *
+		// */
 		// String cname1 = "";
-		// String query = "Select FName, LName From customer WHERE CustID=" + CustID + ";";
+		// String query = "Select FName, LName From customer WHERE CustID=" + CustID +
+		// ";";
 		// Statement stmt = conn.createStatement();
 		// ResultSet rset = stmt.executeQuery(query);
 
 		// while (rset.next()) {
-		// 	cname1 = rset.getString(1) + " " + rset.getString(2);
+		// cname1 = rset.getString(1) + " " + rset.getString(2);
 		// }
 
 		/*
@@ -758,13 +848,14 @@ public final class DBNinja {
 		PreparedStatement os;
 		ResultSet rset2;
 		String query2;
-		query2 = "Select CustomerFName, CustomerLName From customer WHERE CustomerID=?;";
+		query2 = "Select CustomerFName, CustomerLName From Part2.customer WHERE CustomerID=?;";
 		os = conn.prepareStatement(query2);
 		os.setInt(1, CustID);
 		rset2 = os.executeQuery();
 		while (rset2.next()) {
-			cname2 = rset2.getString("CustomerFName") + " " + rset2.getString("CustomerLName"); // note the use of field names in the
-																				// getSting methods
+			cname2 = rset2.getString("CustomerFName") + " " + rset2.getString("CustomerLName"); // note the use of field
+																								// names in the
+			// getSting methods
 		}
 
 		conn.close();
