@@ -207,6 +207,18 @@ public final class DBNinja {
 		 * 
 		 * What that means will be specific to your implementatinon.
 		 */
+		PreparedStatement os = conn.prepareStatement(
+				String.format("INSERT INTO Part2.pizzadiscount VALUES (%d,%d);", p.getPizzaID(), d.getDiscountID()));
+		os.executeUpdate();
+		// Code below to test the function
+
+		PreparedStatement test = conn.prepareStatement("SELECT * FROM Part2.pizzadiscount;");
+		ResultSet testResult = test.executeQuery();
+		while (testResult.next()) {
+			System.out.println(testResult.getInt("PizzaDiscountPizzaNum"));
+			System.out.println(testResult.getInt("PizzaDiscountNum"));
+			System.out.println("");
+		}
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 	}
@@ -218,6 +230,20 @@ public final class DBNinja {
 		 * 
 		 * You might use this, you might not depending on where / how to want to update
 		 * this information in the dabast
+		 */
+		PreparedStatement os = conn.prepareStatement(
+				String.format("INSERT INTO Part2.orderdiscount VALUES (%d,%d);", o.getOrderID(), d.getDiscountID()));
+		os.executeUpdate();
+		// Code below to test the function
+		/*
+		 * PreparedStatement test =
+		 * conn.prepareStatement("SELECT * FROM Part2.orderdiscount;");
+		 * ResultSet testResult = test.executeQuery();
+		 * while (testResult.next()) {
+		 * System.out.println(testResult.getInt("PizzaDiscountOrderNum"));
+		 * System.out.println(testResult.getInt("PizzaDiscountDiscountNum"));
+		 * System.out.println("");
+		 * }
 		 */
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
@@ -502,19 +528,38 @@ public final class DBNinja {
 		 * return them in an arrayList of discounts.
 		 * 
 		 */
+		PreparedStatement os = conn.prepareStatement("Select * from Part2.discount");
+		ResultSet rs = os.executeQuery();
+		ArrayList<Discount> discounts = new ArrayList<Discount>();
+		while (rs.next()) {
+			if (rs.getString("DiscountType") == "%") {
+				discounts.add(new Discount(rs.getInt("DiscountNum"), rs.getString("DiscountName"),
+						rs.getDouble("DiscountAmt"), true));
+			} else {
+				discounts.add(new Discount(rs.getInt("DiscountNum"), rs.getString("DiscountName"),
+						rs.getDouble("DiscountAmt"), false));
 
+			}
+		}
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
-		return null;
+		conn.close();
+
+		return discounts;
 	}
 
-	public static Discount findDiscountByName(String name) {
+	public static Discount findDiscountByName(String name) throws SQLException, IOException {
 		/*
 		 * Query the database for a discount using it's name.
 		 * If found, then return an OrderDiscount object for the discount.
 		 * If it's not found....then return null
 		 * 
 		 */
-
+		ArrayList<Discount> discountList = getDiscountList();
+		for (Discount i : discountList) {
+			if (i.getDiscountName().equals(name)) {
+				return i;
+			}
+		}
 		return null;
 	}
 
