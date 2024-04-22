@@ -121,6 +121,7 @@ public final class DBNinja {
 						"INSERT INTO pizza VALUES (%d, %d, %d, %.2f, %.2f,%d);",
 						0, getLastOrder().getOrderID(), pizzabase,
 						p.getCustPrice(), p.getBusPrice(), pizzaState), Statement.RETURN_GENERATED_KEYS);
+
 		os.executeUpdate();
 		ResultSet generated_keys = os.getGeneratedKeys();
 		if (generated_keys.next()) {
@@ -128,8 +129,17 @@ public final class DBNinja {
 			p.setPizzaID((int) pizza_id);
 			for (Topping i : p.getToppings()) {
 				useTopping(p, i, false);
+
 			}
 		}
+		PreparedStatement addCost = conn.prepareStatement(
+				String.format("UPDATE pizzaorder SET PizzaOrderCost=PizzaOrderCost+%d WHERE PizzaOrderNum=%d;",
+						p.getBusPrice(), p.getOrderID()));
+		addCost.executeUpdate();
+		PreparedStatement addPrice = conn.prepareStatement(
+				String.format("UPDATE pizzaorder SET PizzaOrderPrice=PizzaOrderPrice+%d WHERE PizzaOrderNum=%d;",
+						p.getCustPrice(), p.getOrderID()));
+		addPrice.executeUpdate();
 		// Below commented code prints out the pizza prices, intended to check for
 		// accuracy of insert
 		// PreparedStatement check = conn.prepareStatement("SELECT * FROM pizza");
@@ -220,7 +230,7 @@ public final class DBNinja {
 			System.out.println(testResult.getInt("PizzaDiscountNum"));
 			System.out.println("");
 		}
-
+		conn.close();
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 	}
 
@@ -235,6 +245,18 @@ public final class DBNinja {
 		PreparedStatement os = conn.prepareStatement(
 				String.format("INSERT INTO orderdiscount VALUES (%d,%d);", o.getOrderID(), d.getDiscountID()));
 		os.executeUpdate();
+		PreparedStatement updatePrice;
+		if (d.isPercent()) {
+			updatePrice = conn.prepareStatement(String.format(
+					"UPDATE pizzaorder SET PizzaOrderPrice=PizzaOrderPrice*((100-%d)/100.0) WHERE PizzaOrderNum=%d;",
+					d.getAmount(), o.getOrderID()));
+		} else {
+			updatePrice = conn.prepareStatement(
+					String.format("UPDATE pizzaorder SET PizzaOrderPrice=PizzaOrderPrice-%d WHERE PizzaOrderNum=%d;",
+							d.getAmount(), o.getOrderID()));
+
+		}
+		updatePrice.executeUpdate();
 		// Code below to test the function
 		/*
 		 * PreparedStatement test =
@@ -246,6 +268,7 @@ public final class DBNinja {
 		 * System.out.println("");
 		 * }
 		 */
+		conn.close();
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 	}

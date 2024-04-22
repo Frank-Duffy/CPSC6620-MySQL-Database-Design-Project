@@ -204,7 +204,7 @@ public class Menu {
 				break;
 		}
 		System.out.println("Let's build a pizza!");
-		buildPizza(1);
+		buildPizza(DBNinja.getLastOrder().getOrderID());
 
 		System.out.println(
 				"Enter -1 to stop adding pizzas...Enter anything else to continue adding pizzas to the order.");
@@ -529,20 +529,21 @@ public class Menu {
 			case 4:
 				ret.setCrustType(DBNinja.crust_gf);
 		}
-		DBNinja.addPizza(ret);
 		DBNinja.printInventory();
 		System.out.println("Which topping do you want to add? Enter the TopID. Enter -1 to stop adding toppings: ");
 
 		String topping_string = reader.readLine();
 		int topping = Integer.parseInt(topping_string);
-
+		double price_increase = DBNinja.getBaseCustPrice(ret.getSize(), ret.getCrustType());
+		double cost_increase = DBNinja.getBaseBusPrice(ret.getSize(), ret.getCrustType());
 		while (topping != -1) {
 
 			for (Topping i : DBNinja.getToppingList()) {
 
 				if (i.getTopID() == topping) {
 					double sizeMax = 0.0;
-
+					price_increase += i.getCustPrice();
+					cost_increase += i.getBusPrice();
 					switch (size) {
 						case 1:
 							sizeMax = i.getPerAMT();
@@ -563,6 +564,24 @@ public class Menu {
 					}
 					System.out.println("Do you want to add extra topping? Enter y/n");
 					String extra_string = reader.readLine();
+
+					// NOTE: Below commented code is for if the price or cost is determined by the
+					// size
+					// switch (ret.getSize()) {
+					// case DBNinja.size_s:
+					// price_increase = i.getPerAMT();
+					// break;
+					// case DBNinja.size_m:
+					// price_increase = i.getMedAMT();
+					// break;
+					// case DBNinja.size_l:
+					// price_increase = i.getLgAMT();
+					// break;
+					// case DBNinja.size_xl:
+					// price_increase = i.getXLAMT();
+					// break;
+					// }
+
 					if (extra_string.toLowerCase() == "y") {
 						ret.addToppings(i, true);
 					} else {
@@ -594,20 +613,30 @@ public class Menu {
 
 			while (discount != -1) {
 				for (Discount i : discount_list) {
+					if (i.getDiscountID() == discount) {
+						DBNinja.usePizzaDiscount(ret, i);
+						if (i.isPercent()) {
+							price_increase *= (100 - i.getAmount()) / 100.0;
+						} else {
+							price_increase -= i.getAmount();
+						}
+
+					}
+				}
+				for (Discount i : discount_list) {
 					System.out.println(i.toString());
 				}
 				System.out.println(
 						"Which Pizza Discount do you want to add? Enter the DiscountID. Enter -1 to stop adding Discounts: ");
 				discount_string = reader.readLine();
 				discount = Integer.parseInt(discount_string);
-				for (Discount i : discount_list) {
-					if (i.getDiscountID() == discount) {
-						DBNinja.usePizzaDiscount(ret, i);
 
-					}
-				}
 			}
 		}
+		ret.setBusPrice(cost_increase);
+		ret.setCustPrice(price_increase);
+		ret.setOrderID(orderID);
+		DBNinja.addPizza(ret);
 
 		// TODO compute pizza price
 		// double pizza_price = 0.0;
