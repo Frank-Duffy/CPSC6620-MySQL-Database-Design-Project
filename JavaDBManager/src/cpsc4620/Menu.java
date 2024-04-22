@@ -328,22 +328,32 @@ public class Menu {
 			return;
 		}
 		for (Order order : order_list) {
-			System.out.println(order); 
+			System.out.println(order.toSimplePrint()); 
 		}
 		System.out.println("Which order would you like to see in detail? Enter the number (-1 to exit): ");
-		String specific_order_string = reader.readLine();
-		int specific_order = Integer.parseInt(specific_order_string);
-		if (specific_order == -1) {
-			return;
+		String orderNumberString = reader.readLine();
+		int orderNumber = Integer.parseInt(orderNumberString);
+
+		if (orderNumber == -1) {
+			System.out.println("Exiting...");
+			return; // or perform any other desired action
 		}
-		for (Order i : order_list) {
-			if (i.getOrderID() == specific_order) {
-				System.out.println(i.toString());
+
+		// Find the specific order and display its details
+		boolean found = false;
+		for (Order order : order_list) {
+			if (order.getOrderID() == orderNumber) {
+				System.out.println("Order Details:");
+				System.out.println(order.toString());
+				found = true;
 				break;
 			}
 		}
-		// Else:
-		System.out.println("Incorrect entry, returning to menu.");
+
+		if (!found) {
+    		System.out.println("Order not found.");
+			return;
+		}
 		return;
 		// System.out.println("What is the date you want to restrict by? (FORMAT=
 		// YYYY-MM-DD)");
@@ -352,7 +362,6 @@ public class Menu {
 		// number (-1 to exit): ");
 		// System.out.println("Incorrect entry, returning to menu.");
 		// System.out.println("No orders to display, returning to menu.");
-
 	}
 
 	// When an order is completed, we need to make sure it is marked as complete
