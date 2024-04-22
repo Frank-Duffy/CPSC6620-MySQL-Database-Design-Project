@@ -106,28 +106,35 @@ public class Menu {
 		int customer = -1;
 		switch (order_option) {
 			case 1:
-				order.setOrderType("dine-in");
 				System.out.println("What is the table number for this order?");
 				String table_num_string = reader.readLine();
+
 				int table_num = Integer.parseInt(table_num_string);
 				order.setCustID(-1);
+				DineinOrder dinein = new DineinOrder(0, 0, "2024-03-22", 0.0, 0.0, 0, table_num);
+				dinein.setOrderType("dinein");
+				DBNinja.addOrder(dinein);
 				break;
 			case 2:
-				order.setOrderType("pick-up");
+
+				PickupOrder pickup_order = new PickupOrder(0, 0, "2024-03-22", 0.0, 0.0, 0, 0);
+
+				pickup_order.setOrderType("pickup");
 				System.out.println("Is this order for an existing customer? Answer y/n: ");
 				existing_customer = reader.readLine();
-				while (existing_customer.toLowerCase() != "y" && existing_customer.toLowerCase() != "n") {
+				while (existing_customer.toLowerCase().equals("y") == false
+						&& existing_customer.toLowerCase().equals("n") == false) {
 					System.out.println("ERROR: I don't understand your input for: Is this order an existing customer?");
 					System.out.println("Is this order for an existing customer? Answer y/n: ");
 					existing_customer = reader.readLine();
 				}
-				if (existing_customer.toLowerCase() == "y") {
+				if (existing_customer.toLowerCase().equals("y")) {
 					System.out.println("Here's a list of the current customers: ");
 					DBNinja.getCustomerList();
 					System.out.println("Which customer is this order for? Enter ID Number:");
-					String customer_string = reader.readLine();
+					option = reader.readLine();
 					int customer_int = Integer.parseInt(option);
-					order.setCustID(customer_int);
+					pickup_order.setCustID(customer_int);
 				} else {
 					System.out.println("What is this customer's name (first <space> last");
 					String name = reader.readLine();
@@ -139,19 +146,25 @@ public class Menu {
 					new_customer.setLName(name.split(" ")[1]);
 					new_customer.setPhone(phone_string);
 					DBNinja.addCustomer(new_customer);
-					order.setCustID(DBNinja.findCustomerByPhone(phone_string).getCustID());
+					pickup_order.setCustID(DBNinja.findCustomerByPhone(phone_string).getCustID());
+
 				}
+				DBNinja.addOrder(pickup_order);
+
 				break;
 			case 3:
-				order.setOrderType("delivery");
+				DeliveryOrder new_delivery = new DeliveryOrder(0, 0, "2024-04-21", 0.0, 0.0, 0, "");
+
+				// order.setOrderType("delivery");
 				System.out.println("Is this order for an existing customer? Answer y/n: ");
 				existing_customer = reader.readLine();
-				while (existing_customer.toLowerCase() != "y" && existing_customer.toLowerCase() != "n") {
+				while (existing_customer.toLowerCase().equals("y") == false
+						&& existing_customer.toLowerCase().equals("n") == false) {
 					System.out.println("ERROR: I don't understand your input for: Is this order an existing customer?");
 					System.out.println("Is this order for an existing customer? Answer y/n: ");
 					existing_customer = reader.readLine();
 				}
-				if (existing_customer.toLowerCase() == "y") {
+				if (existing_customer.toLowerCase().equals("y")) {
 					System.out.println("Here's a list of the current customers: ");
 					viewCustomers();
 					System.out.println("Which customer is this order for? Enter ID Number:");
@@ -184,13 +197,13 @@ public class Menu {
 					int zip = Integer.parseInt(zip_string);
 					new_customer.setAddress(house_string, city, state, zip_string);
 					DBNinja.addCustomer(new_customer);
-					order.setCustID(DBNinja.findCustomerByPhone(phone_string).getCustID());
-
+					new_delivery.setCustID(DBNinja.findCustomerByPhone(phone_string).getCustID());
+					new_delivery.setAddress(String.format("%s, %s, %s, %s", street, city, state, zip_string));
+					DBNinja.addOrder(new_delivery);
 				}
 				break;
 		}
 		System.out.println("Let's build a pizza!");
-		DBNinja.addOrder(order);
 		buildPizza(1);
 
 		System.out.println(
@@ -208,21 +221,37 @@ public class Menu {
 
 		System.out.println("Do you want to add discounts to this order? Enter y/n?");
 		String add_order_discounts = reader.readLine();
-		if (add_order_discounts.toLowerCase() == "y") {
+		if (add_order_discounts.toLowerCase().equals("y")) {
+			ArrayList<Discount> discounts = DBNinja.getDiscountList();
+			for (Discount i : discounts) {
+				System.out.println(i.toString());
+			}
 			System.out.println(
 					"Which Order Discount do you want to add? Enter the DiscountID. Enter -1 to stop adding Discounts: ");
 			String order_discount_string = reader.readLine();
 			int order_discount = Integer.parseInt(order_discount_string);
-			DBNinja.useOrderDiscount(order, DBNinja.getDiscountList().get(order_discount - 1));
+			for (Discount i : discounts) {
+				if (i.getDiscountID() == order_discount) {
+					DBNinja.useOrderDiscount(order, i);
+
+				}
+			}
 
 			while (order_discount != -1) {
+				for (Discount i : discounts) {
+					System.out.println(i.toString());
+				}
 				System.out.println(
 						"Which Order Discount do you want to add? Enter the DiscountID. Enter -1 to stop adding Discounts: ");
 				order_discount_string = reader.readLine();
 				order_discount = Integer.parseInt(order_discount_string);
 
-				DBNinja.useOrderDiscount(order, DBNinja.getDiscountList().get(order_discount - 1));
+				for (Discount i : discounts) {
+					if (i.getDiscountID() == order_discount) {
+						DBNinja.useOrderDiscount(order, i);
 
+					}
+				}
 			}
 		}
 
@@ -462,7 +491,7 @@ public class Menu {
 		 * 
 		 * Once the discounts are added, we can return the pizza
 		 */
-		Pizza ret = null;
+		Pizza ret = new Pizza(0, "", "", 0, "Incomplete", "2024-04-24", 0.0, 0.0);
 		// User Input Prompts...
 		System.out.println("What size is the pizza?");
 		System.out.println("1." + DBNinja.size_s);
@@ -502,13 +531,12 @@ public class Menu {
 		}
 		DBNinja.addPizza(ret);
 		DBNinja.printInventory();
+		System.out.println("Which topping do you want to add? Enter the TopID. Enter -1 to stop adding toppings: ");
+
 		String topping_string = reader.readLine();
 		int topping = Integer.parseInt(topping_string);
 
-		System.out.println("Which topping do you want to add? Enter the TopID. Enter -1 to stop adding toppings: ");
 		while (topping != -1) {
-			topping_string = reader.readLine();
-			topping = Integer.parseInt(topping_string);
 
 			for (Topping i : DBNinja.getToppingList()) {
 
@@ -536,14 +564,14 @@ public class Menu {
 					System.out.println("Do you want to add extra topping? Enter y/n");
 					String extra_string = reader.readLine();
 					if (extra_string.toLowerCase() == "y") {
-
-						DBNinja.useTopping(ret, DBNinja.getToppingList().get(topping - 1), true);
+						ret.addToppings(i, true);
 					} else {
-						DBNinja.useTopping(ret, DBNinja.getToppingList().get(topping - 1), false);
+						ret.addToppings(i, false);
 					}
 
 				}
 			}
+			DBNinja.printInventory();
 
 			System.out.println("Which topping do you want to add? Enter the TopID. Enter -1 to stop adding toppings: ");
 			topping_string = reader.readLine();
@@ -553,19 +581,31 @@ public class Menu {
 		}
 		System.out.println("Do you want to add discounts to this Pizza? Enter y/n?");
 		String continue_adding = reader.readLine();
-		if (continue_adding.toLowerCase() == "y") {
+		if (continue_adding.toLowerCase().equals("y")) {
 
+			ArrayList<Discount> discount_list = DBNinja.getDiscountList();
+			for (Discount i : discount_list) {
+				System.out.println(i.toString());
+			}
 			System.out.println(
 					"Which Pizza Discount do you want to add? Enter the DiscountID. Enter -1 to stop adding Discounts: ");
 			String discount_string = reader.readLine();
 			int discount = Integer.parseInt(discount_string);
 
 			while (discount != -1) {
+				for (Discount i : discount_list) {
+					System.out.println(i.toString());
+				}
 				System.out.println(
 						"Which Pizza Discount do you want to add? Enter the DiscountID. Enter -1 to stop adding Discounts: ");
 				discount_string = reader.readLine();
 				discount = Integer.parseInt(discount_string);
-				DBNinja.usePizzaDiscount(ret, DBNinja.getDiscountList().get(discount - 1));
+				for (Discount i : discount_list) {
+					if (i.getDiscountID() == discount) {
+						DBNinja.usePizzaDiscount(ret, i);
+
+					}
+				}
 			}
 		}
 

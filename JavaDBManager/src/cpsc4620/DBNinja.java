@@ -58,19 +58,14 @@ public final class DBNinja {
 	}
 
 	public static void addOrder(Order o) throws SQLException, IOException {
-		System.out.println("called addOrder");
 		connect_to_db();
 
 		// TODO Implement converted present time to date string
 		String orderDateString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 
-		System.out.println(String.format(
-				"INSERT INTO Part2.pizzaorder VALUES (%d, %.2f, %.2f, ?, %d, ?);",
-				0,
-				0.0, 0.0, 0));
 		PreparedStatement os = conn
 				.prepareStatement(String.format(
-						"INSERT INTO Part2.pizzaorder VALUES (%d, %.2f, %.2f, ?, %d, ?);",
+						"INSERT INTO pizzaorder VALUES (%d, %.2f, %.2f, ?, %d, ?);",
 						0,
 						0.0, 0.0, 0, o.getOrderType()));
 		os.setString(1, orderDateString);
@@ -79,7 +74,7 @@ public final class DBNinja {
 		// Below commented code prints out the order dates, intended to check for
 		// accuracy of insert
 		// PreparedStatement check = conn.prepareStatement("SELECT * FROM
-		// Part2.pizzaorder");
+		// pizzaorder");
 		// ResultSet rset2 = check.executeQuery();
 		// while (rset2.next()) {
 		// System.out.println(rset2.getString("PizzaOrderDate"));
@@ -106,11 +101,10 @@ public final class DBNinja {
 		 * there are other methods below that may help with that process.
 		 * 
 		 */
-		connect_to_db();
 
 		// TODO Implement converted present time to date string
 		PreparedStatement getPizzaBase = conn.prepareStatement(
-				"SELECT PizzaBaseNum FROM Part2.pizzabase WHERE PizzaBaseSize=? AND PizzaBaseCrust=?;");
+				"SELECT PizzaBaseNum FROM pizzabase WHERE PizzaBaseSize=? AND PizzaBaseCrust=?;");
 		getPizzaBase.setString(1, p.getSize());
 		getPizzaBase.setString(2, p.getCrustType());
 		ResultSet rset2 = getPizzaBase.executeQuery();
@@ -124,18 +118,25 @@ public final class DBNinja {
 		}
 		PreparedStatement os = conn
 				.prepareStatement(String.format(
-						"INSERT INTO Part2.pizza VALUES (%d, %d, %d, %.2f, %.2f,%d);",
+						"INSERT INTO pizza VALUES (%d, %d, %d, %.2f, %.2f,%d);",
 						0, getLastOrder().getOrderID(), pizzabase,
-						p.getCustPrice(), p.getBusPrice(), pizzaState));
-
+						p.getCustPrice(), p.getBusPrice(), pizzaState), Statement.RETURN_GENERATED_KEYS);
 		os.executeUpdate();
+		ResultSet generated_keys = os.getGeneratedKeys();
+		if (generated_keys.next()) {
+			long pizza_id = generated_keys.getLong(1);
+			p.setPizzaID((int) pizza_id);
+			for (Topping i : p.getToppings()) {
+				useTopping(p, i, false);
+			}
+		}
 		// Below commented code prints out the pizza prices, intended to check for
 		// accuracy of insert
-		PreparedStatement check = conn.prepareStatement("SELECT * FROM Part2.pizza");
-		ResultSet rset3 = check.executeQuery();
-		while (rset3.next()) {
-			System.out.println(rset3.getString("PizzaPrice"));
-		}
+		// PreparedStatement check = conn.prepareStatement("SELECT * FROM pizza");
+		// ResultSet rset3 = check.executeQuery();
+		// while (rset3.next()) {
+		// System.out.println(rset3.getString("PizzaPrice"));
+		// }
 
 		conn.close();
 
@@ -180,16 +181,16 @@ public final class DBNinja {
 		}
 		PreparedStatement os = conn
 				.prepareStatement(
-						String.format("UPDATE Part2.topping SET ToppingQOH=ToppingQOH-%.2f WHERE ToppingNum=%d;",
+						String.format("UPDATE topping SET ToppingQOH=ToppingQOH-%.2f WHERE ToppingNum=%d;",
 								amount_to_subtract, t.getTopID()));
 		os.executeUpdate();
 		PreparedStatement add_bridge = conn.prepareStatement(String.format(
-				"INSERT INTO Part2.pizzatopping VALUES (%d,%d,%d);", p.getPizzaID(), t.getTopID(), isDoubled ? 1 : 0));
+				"INSERT INTO pizzatopping VALUES (%d,%d,%d);", p.getPizzaID(), t.getTopID(), isDoubled ? 1 : 0));
 		add_bridge.executeUpdate();
 		// Below commented code prints out the pizza topping bridge, intended to check
 		// for
 		// accuracy of insert
-		PreparedStatement check = conn.prepareStatement("SELECT * FROM Part2.pizzatopping");
+		PreparedStatement check = conn.prepareStatement("SELECT * FROM pizzatopping");
 		ResultSet rset2 = check.executeQuery();
 		while (rset2.next()) {
 			System.out.println(rset2.getString("PizzaToppingToppingNum"));
@@ -208,11 +209,11 @@ public final class DBNinja {
 		 * What that means will be specific to your implementatinon.
 		 */
 		PreparedStatement os = conn.prepareStatement(
-				String.format("INSERT INTO Part2.pizzadiscount VALUES (%d,%d);", p.getPizzaID(), d.getDiscountID()));
+				String.format("INSERT INTO pizzadiscount VALUES (%d,%d);", p.getPizzaID(), d.getDiscountID()));
 		os.executeUpdate();
 		// Code below to test the function
 
-		PreparedStatement test = conn.prepareStatement("SELECT * FROM Part2.pizzadiscount;");
+		PreparedStatement test = conn.prepareStatement("SELECT * FROM pizzadiscount;");
 		ResultSet testResult = test.executeQuery();
 		while (testResult.next()) {
 			System.out.println(testResult.getInt("PizzaDiscountPizzaNum"));
@@ -232,12 +233,12 @@ public final class DBNinja {
 		 * this information in the dabast
 		 */
 		PreparedStatement os = conn.prepareStatement(
-				String.format("INSERT INTO Part2.orderdiscount VALUES (%d,%d);", o.getOrderID(), d.getDiscountID()));
+				String.format("INSERT INTO orderdiscount VALUES (%d,%d);", o.getOrderID(), d.getDiscountID()));
 		os.executeUpdate();
 		// Code below to test the function
 		/*
 		 * PreparedStatement test =
-		 * conn.prepareStatement("SELECT * FROM Part2.orderdiscount;");
+		 * conn.prepareStatement("SELECT * FROM orderdiscount;");
 		 * ResultSet testResult = test.executeQuery();
 		 * while (testResult.next()) {
 		 * System.out.println(testResult.getInt("PizzaDiscountOrderNum"));
@@ -254,7 +255,7 @@ public final class DBNinja {
 
 		PreparedStatement os = conn
 				.prepareStatement(String.format(
-						"INSERT INTO Part2.customer VALUES (%d, ?, ?,?, ?, ?, %d, ?);",
+						"INSERT INTO customer VALUES (%d, ?, ?,?, ?, ?, %d, ?);",
 						0,
 						null));
 		os.setString(1, c.getFName());
@@ -269,7 +270,7 @@ public final class DBNinja {
 		// accuracy of insert
 		/*
 		 * PreparedStatement check = conn.prepareStatement("SELECT * FROM
-		 * Part2.customer");
+		 * customer");
 		 * ResultSet rset2 = check.executeQuery();
 		 * while (rset2.next()) {
 		 * System.out.println(rset2.getString("CustomerFName"));
@@ -294,7 +295,7 @@ public final class DBNinja {
 		 */
 		System.out.println(o.getOrderID());
 		PreparedStatement os = conn.prepareStatement(String
-				.format("UPDATE Part2.pizzaorder SET PizzaOrderComplete=True WHERE PizzaOrderNum=%d;", o.getOrderID()));
+				.format("UPDATE pizzaorder SET PizzaOrderComplete=True WHERE PizzaOrderNum=%d;", o.getOrderID()));
 		os.executeUpdate();
 		conn.close();
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
@@ -323,11 +324,11 @@ public final class DBNinja {
 		try {
 			String query = "SELECT o.*, d.DineInTableNum, p.PickupCustomerID, de.DeliveryCustomerID, " +
 					"c.CustomerStreet, c.CustomerCity, c.CustomerState, c.CustomerZip " +
-					"FROM Part2.pizzaorder o " +
-					"LEFT JOIN Part2.dinein d ON o.PizzaOrderNum = d.DineInPizzaOrderNum " +
-					"LEFT JOIN Part2.pickup p ON o.PizzaOrderNum = p.PickupPizzaOrderNum " +
-					"LEFT JOIN Part2.delivery de ON o.PizzaOrderNum = de.DeliveryPizzaOrderNum " +
-					"LEFT JOIN Part2.customer c ON p.PickupCustomerID = c.CustomerID OR de.DeliveryCustomerID = c.CustomerID "
+					"FROM pizzaorder o " +
+					"LEFT JOIN dinein d ON o.PizzaOrderNum = d.DineInPizzaOrderNum " +
+					"LEFT JOIN pickup p ON o.PizzaOrderNum = p.PickupPizzaOrderNum " +
+					"LEFT JOIN delivery de ON o.PizzaOrderNum = de.DeliveryPizzaOrderNum " +
+					"LEFT JOIN customer c ON p.PickupCustomerID = c.CustomerID OR de.DeliveryCustomerID = c.CustomerID "
 					+
 					(openOnly ? "WHERE o.PizzaOrderComplete = FALSE " : "") +
 					"ORDER BY o.PizzaOrderDate DESC";
@@ -528,7 +529,7 @@ public final class DBNinja {
 		 * return them in an arrayList of discounts.
 		 * 
 		 */
-		PreparedStatement os = conn.prepareStatement("Select * from Part2.discount");
+		PreparedStatement os = conn.prepareStatement("Select * from discount");
 		ResultSet rs = os.executeQuery();
 		ArrayList<Discount> discounts = new ArrayList<Discount>();
 		while (rs.next()) {
@@ -745,8 +746,17 @@ public final class DBNinja {
 		 * Query the database fro the base customer price for that size and crust pizza.
 		 * 
 		 */
-
+		PreparedStatement os = conn.prepareStatement(
+				"SELECT PizzaBasePrice FROM pizzabase WHERE PizzaBaseSize=? AND PizzaBaseCrust=?;");
+		os.setString(1, size);
+		os.setString(2, crust);
+		ResultSet rs = os.executeQuery();
+		while (rs.next()) {
+			return rs.getDouble("PizzaBasePrice");
+		}
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
+
 		return 0.0;
 	}
 
@@ -758,6 +768,17 @@ public final class DBNinja {
 		 */
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
+		PreparedStatement os = conn.prepareStatement(
+				"SELECT PizzaBaseCost FROM pizzabase WHERE PizzaBaseSize=? AND PizzaBaseCrust=?;");
+		os.setString(1, size);
+		os.setString(2, crust);
+		ResultSet rs = os.executeQuery();
+		while (rs.next()) {
+			return rs.getDouble("PizzaBaseCost");
+		}
+		// DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
+
 		return 0.0;
 	}
 
@@ -893,7 +914,7 @@ public final class DBNinja {
 		PreparedStatement os;
 		ResultSet rset2;
 		String query2;
-		query2 = "Select CustomerFName, CustomerLName From Part2.customer WHERE CustomerID=?;";
+		query2 = "Select CustomerFName, CustomerLName From customer WHERE CustomerID=?;";
 		os = conn.prepareStatement(query2);
 		os.setInt(1, CustID);
 		rset2 = os.executeQuery();
