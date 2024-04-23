@@ -1,5 +1,6 @@
 -- Authors: Noah Britt, Francis Duffy
 
+CREATE SCHEMA IF NOT EXISTS Pizzeria;
 USE Pizzeria;
 
 INSERT INTO topping (

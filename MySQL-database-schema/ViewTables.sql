@@ -1,6 +1,8 @@
 -- Authors: Noah Britt, Francis Duffy
 
+CREATE SCHEMA IF NOT EXISTS Pizzeria;
 USE Pizzeria;
+
 SELECT * FROM pickup;
 SELECT * FROM dinein;
 SELECT * FROM delivery;

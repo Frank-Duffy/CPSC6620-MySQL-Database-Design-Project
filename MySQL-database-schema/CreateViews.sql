@@ -1,6 +1,7 @@
 -- Authors: Noah Britt, Francis Duffy
 
-Use Pizzeria;
+CREATE SCHEMA IF NOT EXISTS Pizzeria;
+USE Pizzeria;
 
 CREATE OR REPLACE VIEW ToppingPopularity AS
 SELECT t.ToppingName, COUNT(pt.PizzaToppingToppingNum) + SUM(CASE WHEN pt.PizzaToppingHasDouble THEN 1 ELSE 0 END) AS ToppingCount

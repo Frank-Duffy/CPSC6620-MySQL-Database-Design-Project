@@ -1,6 +1,6 @@
 -- Authors: Noah Britt, Francis Duffy
 
--- CREATE schema Pizzeria;
+CREATE SCHEMA IF NOT EXISTS Pizzeria;
 USE Pizzeria;
 
 
