@@ -52,8 +52,8 @@ CREATE TABLE pizza(
 	PizzaNum	    INT	PRIMARY KEY AUTO_INCREMENT,
 	PizzaOrderNum	INT	NOT NULL,
     PizzaBaseNum    INT NOT NULL,
-	PizzaPrice	    DECIMAL(4,2) NOT NULL,
-	PizzaCost	    DECIMAL(4,2) NOT NULL,
+	PizzaPrice	    DECIMAL(5,2) NOT NULL,
+	PizzaCost	    DECIMAL(5,2) NOT NULL,
 	PizzaIsComplete BOOLEAN NOT NULL DEFAULT 0,
     FOREIGN KEY (PizzaOrderNum) REFERENCES pizzaorder(PizzaOrderNum),
     FOREIGN KEY (PizzaBaseNum) REFERENCES pizzabase(PizzaBaseNum)
@@ -87,8 +87,8 @@ CREATE TABLE topping(
     ToppingMedium	DECIMAL(3,2)	NOT NULL,
     ToppingLarge	DECIMAL(3,2)	NOT NULL,
     ToppingXLarge	DECIMAL(3,2)	NOT NULL,
-    ToppingMinQOH   DECIMAL(5,2)    NOT NULL,
-    ToppingQOH      DECIMAL(5,2)    NOT NULL
+    ToppingMinQOH   DECIMAL(8,2)    NOT NULL,
+    ToppingQOH      DECIMAL(8,2)    NOT NULL
 );
 CREATE TABLE pizzatopping(
 	PizzaToppingPizzaNum	INT	NOT NULL,

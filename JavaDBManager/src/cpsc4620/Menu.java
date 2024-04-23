@@ -170,6 +170,29 @@ public class Menu {
 					System.out.println("Which customer is this order for? Enter ID Number:");
 					String customer_string = reader.readLine();
 					customer = Integer.parseInt(option);
+					ArrayList<Customer> customer_list = DBNinja.getCustomerList();
+					for (Customer i : customer_list) {
+						if (i.getCustID() == customer) {
+							System.out.println("What is the House/Apt Number for this order? (e.g., 111)");
+							String house_string = reader.readLine();
+							int house = Integer.parseInt(house_string);
+
+							System.out.println("What is the Street for this order? (e.g., Smile Street)");
+							String street = reader.readLine();
+							System.out.println("What is the City for this order? (e.g., Greenville)");
+							String city = reader.readLine();
+							System.out.println("What is the State for this order? (e.g., SC)");
+							String state = reader.readLine();
+							System.out.println("What is the Zip Code for this order? (e.g., 20605)");
+							String zip_string = reader.readLine();
+							int zip = Integer.parseInt(zip_string);
+							i.setAddress(house_string, city, state, zip_string);
+							DBNinja.updateCustomer(i, i.getCustID());
+							new_delivery.setCustID(i.getCustID());
+							new_delivery.setAddress(String.format("%s, %s, %s, %s", street, city, state, zip_string));
+							DBNinja.addOrder(new_delivery);
+						}
+					}
 
 				} else {
 					System.out.println("What is this customer's name (first <space> last");
@@ -384,7 +407,7 @@ public class Menu {
 			return;
 		}
 
-		//print the order discount details
+		// print the order discount details
 		ArrayList<Discount> orderDiscounts = DBNinja.getOrderDiscounts(orderNumber);
 		if (orderDiscounts.isEmpty()) {
 			System.out.println("NO ORDER DISCOUNTS");
@@ -394,16 +417,15 @@ public class Menu {
 			for (Discount discount : orderDiscounts) {
 				discountNames.append(discount.getDiscountName()).append(", ");
 			}
-		
+
 			// remove trailing comma and space
 			String discountNamesString = discountNames.substring(0, discountNames.length() - 2);
 			System.out.println("ORDER DISCOUNTS: " + discountNamesString);
 		}
 
-
-		//print the pizza details
+		// print the pizza details
 		ArrayList<Pizza> pizzas = DBNinja.getPizzas(orderNumber);
-		for(Pizza pizza : pizzas) {
+		for (Pizza pizza : pizzas) {
 			System.out.println(pizza);
 			ArrayList<Discount> pizzaDiscounts = DBNinja.getPizzaDiscounts(pizza.getPizzaID());
 			printPizzaDiscounts(pizzaDiscounts);
@@ -722,12 +744,12 @@ public class Menu {
 			System.out.println("NO PIZZA DISCOUNTS");
 			return;
 		}
-	
+
 		StringBuilder discountNames = new StringBuilder();
 		for (Discount discount : pizzaDiscounts) {
 			discountNames.append(discount.getDiscountName()).append(", ");
 		}
-	
+
 		// Remove the trailing comma and space
 		String discountNamesString = discountNames.substring(0, discountNames.length() - 2);
 		System.out.println("PIZZA DISCOUNTS: " + discountNamesString);

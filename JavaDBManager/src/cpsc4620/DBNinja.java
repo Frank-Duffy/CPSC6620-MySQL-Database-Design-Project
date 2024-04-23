@@ -165,11 +165,13 @@ public final class DBNinja {
 		conn.close();
 		connect_to_db();
 		PreparedStatement update_order_price = conn.prepareStatement(
-				String.format("UPDATE pizzaorder SET PizzaOrderPrice=PizzaOrderPrice+%.2f WHERE PizzaOrderNum=%d;",
+				String.format(
+						"UPDATE pizzaorder SET PizzaOrderPrice=PizzaOrderPrice+ROUND(%.2f, 2) WHERE PizzaOrderNum=%d;",
 						p.getCustPrice(), p.getOrderID()));
 		update_order_price.executeUpdate();
 		PreparedStatement update_order_cost = conn.prepareStatement(
-				String.format("UPDATE pizzaorder SET PizzaOrderCost=PizzaOrderCost+%.2f WHERE PizzaOrderNum=%d;",
+				String.format(
+						"UPDATE pizzaorder SET PizzaOrderCost=PizzaOrderCost+ROUND(%.2f, 2) WHERE PizzaOrderNum=%d;",
 						p.getBusPrice(), p.getOrderID()));
 		update_order_cost.executeUpdate();
 
@@ -284,7 +286,7 @@ public final class DBNinja {
 
 		o.addDiscount(d);
 		PreparedStatement updatePrice = conn.prepareStatement(
-				String.format("UPDATE pizzaorder SET PizzaOrderPrice=%.2f WHERE PizzaOrderNum=%d;",
+				String.format("UPDATE pizzaorder SET PizzaOrderPrice=ROUND(%.2f, 2) WHERE PizzaOrderNum=%d;",
 						o.getCustPrice(), o.getOrderID()));
 
 		updatePrice.executeUpdate();
@@ -302,6 +304,18 @@ public final class DBNinja {
 		conn.close();
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
+	}
+
+	public static void updateCustomer(Customer c, int custID) throws SQLException, IOException {
+		connect_to_db();
+		PreparedStatement os = conn
+				.prepareStatement(
+						"UPDATE customer SET CustomerStreet=? WHERE CustomerID=?;");
+		os.setString(1, c.getAddress());
+		os.setInt(2, custID);
+
+		os.executeUpdate();
+		conn.close();
 	}
 
 	public static void addCustomer(Customer c) throws SQLException, IOException {
