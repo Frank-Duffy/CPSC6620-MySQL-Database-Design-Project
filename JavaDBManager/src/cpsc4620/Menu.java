@@ -293,7 +293,7 @@ public class Menu {
 		 */
 
 		// User Input Prompts...
-		System.out.println("What is this customer's name (first <space> last");
+		System.out.println("What is this customer's name (first <space> last):");
 		String name = reader.readLine();
 		System.out.println("What is this customer's phone number (##########) (No dash/space)");
 		String phone_string = reader.readLine();
