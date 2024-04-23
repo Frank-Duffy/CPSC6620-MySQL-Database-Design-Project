@@ -252,8 +252,7 @@ public final class DBNinja {
 		 * 
 		 * What that means will be specific to your implementatinon.
 		 */
-		System.out.println(p.getPizzaID());
-		System.out.println(d.getDiscountID());
+
 		PreparedStatement os = conn.prepareStatement(
 				String.format("INSERT INTO pizzadiscount VALUES (%d,%d);", p.getPizzaID(), d.getDiscountID()));
 		os.executeUpdate();
@@ -284,7 +283,6 @@ public final class DBNinja {
 		os.executeUpdate();
 
 		o.addDiscount(d);
-		System.out.println(o.getOrderID());
 		PreparedStatement updatePrice = conn.prepareStatement(
 				String.format("UPDATE pizzaorder SET PizzaOrderPrice=%.2f WHERE PizzaOrderNum=%d;",
 						o.getCustPrice(), o.getOrderID()));

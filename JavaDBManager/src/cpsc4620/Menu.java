@@ -130,7 +130,7 @@ public class Menu {
 				}
 				if (existing_customer.toLowerCase().equals("y")) {
 					System.out.println("Here's a list of the current customers: ");
-					DBNinja.getCustomerList();
+					viewCustomers();
 					System.out.println("Which customer is this order for? Enter ID Number:");
 					option = reader.readLine();
 					int customer_int = Integer.parseInt(option);
@@ -155,7 +155,6 @@ public class Menu {
 			case 3:
 				DeliveryOrder new_delivery = new DeliveryOrder(0, 0, "2024-04-21", 0.0, 0.0, 0, "");
 
-				// order.setOrderType("delivery");
 				new_delivery.setOrderType(DBNinja.delivery);
 				System.out.println("Is this order for an existing customer? Answer y/n: ");
 				existing_customer = reader.readLine();
