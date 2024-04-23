@@ -616,7 +616,9 @@ public class Menu {
 			while (discount != -1) {
 				for (Discount i : discount_list) {
 					if (i.getDiscountID() == discount) {
-						ret.addDiscounts(i);
+						Discount i_ = i;
+						i_.setAmount(i_.getAmount() / 100.0);
+						ret.addDiscounts(i_);
 
 					}
 				}
@@ -633,13 +635,6 @@ public class Menu {
 
 		ret.setOrderID(orderID);
 		DBNinja.addPizza(ret);
-
-		// TODO compute pizza price
-		// double pizza_price = 0.0;
-		// ret.setCustPrice(pizza_price);
-		// // TODO compute pizza cost
-		// double pizza_cost = 0.0;
-		// ret.setBusPrice(pizza_cost);
 
 		return ret;
 	}
