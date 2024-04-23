@@ -67,10 +67,36 @@ public final class DBNinja {
 				.prepareStatement(String.format(
 						"INSERT INTO pizzaorder VALUES (%d, %.2f, %.2f, ?, %d, ?);",
 						0,
-						0.0, 0.0, 0, o.getOrderType()));
+						0.0, 0.0, 0, o.getOrderType()), Statement.RETURN_GENERATED_KEYS);
 		os.setString(1, orderDateString);
 		os.setString(2, o.getOrderType());
 		os.executeUpdate();
+
+		os.executeUpdate();
+		ResultSet generated_keys = os.getGeneratedKeys();
+		if (generated_keys.next()) {
+			int order_id = (int) generated_keys.getLong(1);
+			PreparedStatement add_bridge;
+			switch (o.getOrderType()) {
+				case dine_in:
+					add_bridge = conn.prepareStatement(
+							String.format("INSERT INTO dinein VALUES (%d, %d);", order_id,
+									((DineinOrder) o).getTableNum()));
+					break;
+				case pickup:
+					add_bridge = conn.prepareStatement(
+							String.format("INSERT INTO pickup VALUES (%d, %d);", order_id,
+									o.getCustID()));
+					break;
+				default:
+					add_bridge = conn.prepareStatement(
+							String.format("INSERT INTO delivery VALUES (%d, %d);", order_id,
+									o.getCustID()));
+					break;
+			}
+			add_bridge.executeUpdate();
+
+		}
 		// Below commented code prints out the order dates, intended to check for
 		// accuracy of insert
 		// PreparedStatement check = conn.prepareStatement("SELECT * FROM
@@ -131,15 +157,22 @@ public final class DBNinja {
 				useTopping(p, i, false);
 
 			}
+			for (Discount i : p.getDiscounts()) {
+				usePizzaDiscount(p, i);
+
+			}
 		}
-		PreparedStatement addCost = conn.prepareStatement(
-				String.format("UPDATE pizzaorder SET PizzaOrderCost=PizzaOrderCost+%d WHERE PizzaOrderNum=%d;",
-						p.getBusPrice(), p.getOrderID()));
-		addCost.executeUpdate();
-		PreparedStatement addPrice = conn.prepareStatement(
-				String.format("UPDATE pizzaorder SET PizzaOrderPrice=PizzaOrderPrice+%d WHERE PizzaOrderNum=%d;",
+		conn.close();
+		connect_to_db();
+		PreparedStatement update_order_price = conn.prepareStatement(
+				String.format("UPDATE pizzaorder SET PizzaOrderPrice=PizzaOrderPrice+%.2f WHERE PizzaOrderNum=%d;",
 						p.getCustPrice(), p.getOrderID()));
-		addPrice.executeUpdate();
+		update_order_price.executeUpdate();
+		PreparedStatement update_order_cost = conn.prepareStatement(
+				String.format("UPDATE pizzaorder SET PizzaOrderCost=PizzaOrderCost+%.2f WHERE PizzaOrderNum=%d;",
+						p.getBusPrice(), p.getOrderID()));
+		update_order_cost.executeUpdate();
+
 		// Below commented code prints out the pizza prices, intended to check for
 		// accuracy of insert
 		// PreparedStatement check = conn.prepareStatement("SELECT * FROM pizza");
@@ -200,13 +233,14 @@ public final class DBNinja {
 		// Below commented code prints out the pizza topping bridge, intended to check
 		// for
 		// accuracy of insert
-		PreparedStatement check = conn.prepareStatement("SELECT * FROM pizzatopping");
-		ResultSet rset2 = check.executeQuery();
-		while (rset2.next()) {
-			System.out.println(rset2.getString("PizzaToppingToppingNum"));
-			System.out.println(rset2.getString("PizzaToppingPizzaNum"));
-			System.out.println("");
-		}
+		// PreparedStatement check = conn.prepareStatement("SELECT * FROM
+		// pizzatopping");
+		// ResultSet rset2 = check.executeQuery();
+		// while (rset2.next()) {
+		// System.out.println(rset2.getString("PizzaToppingToppingNum"));
+		// System.out.println(rset2.getString("PizzaToppingPizzaNum"));
+		// System.out.println("");
+		// }
 		conn.close();
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 	}
@@ -218,18 +252,21 @@ public final class DBNinja {
 		 * 
 		 * What that means will be specific to your implementatinon.
 		 */
+		System.out.println(p.getPizzaID());
+		System.out.println(d.getDiscountID());
 		PreparedStatement os = conn.prepareStatement(
 				String.format("INSERT INTO pizzadiscount VALUES (%d,%d);", p.getPizzaID(), d.getDiscountID()));
 		os.executeUpdate();
 		// Code below to test the function
 
-		PreparedStatement test = conn.prepareStatement("SELECT * FROM pizzadiscount;");
-		ResultSet testResult = test.executeQuery();
-		while (testResult.next()) {
-			System.out.println(testResult.getInt("PizzaDiscountPizzaNum"));
-			System.out.println(testResult.getInt("PizzaDiscountNum"));
-			System.out.println("");
-		}
+		// PreparedStatement test = conn.prepareStatement("SELECT * FROM
+		// pizzadiscount;");
+		// ResultSet testResult = test.executeQuery();
+		// while (testResult.next()) {
+		// System.out.println(testResult.getInt("PizzaDiscountPizzaNum"));
+		// System.out.println(testResult.getInt("PizzaDiscountNum"));
+		// System.out.println("");
+		// }
 		conn.close();
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 	}
@@ -245,17 +282,13 @@ public final class DBNinja {
 		PreparedStatement os = conn.prepareStatement(
 				String.format("INSERT INTO orderdiscount VALUES (%d,%d);", o.getOrderID(), d.getDiscountID()));
 		os.executeUpdate();
-		PreparedStatement updatePrice;
-		if (d.isPercent()) {
-			updatePrice = conn.prepareStatement(String.format(
-					"UPDATE pizzaorder SET PizzaOrderPrice=PizzaOrderPrice*((100-%d)/100.0) WHERE PizzaOrderNum=%d;",
-					d.getAmount(), o.getOrderID()));
-		} else {
-			updatePrice = conn.prepareStatement(
-					String.format("UPDATE pizzaorder SET PizzaOrderPrice=PizzaOrderPrice-%d WHERE PizzaOrderNum=%d;",
-							d.getAmount(), o.getOrderID()));
 
-		}
+		o.addDiscount(d);
+		System.out.println(o.getOrderID());
+		PreparedStatement updatePrice = conn.prepareStatement(
+				String.format("UPDATE pizzaorder SET PizzaOrderPrice=%.2f WHERE PizzaOrderNum=%d;",
+						o.getCustPrice(), o.getOrderID()));
+
 		updatePrice.executeUpdate();
 		// Code below to test the function
 		/*
@@ -316,7 +349,6 @@ public final class DBNinja {
 		 * the database.
 		 * 
 		 */
-		System.out.println(o.getOrderID());
 		PreparedStatement os = conn.prepareStatement(String
 				.format("UPDATE pizzaorder SET PizzaOrderComplete=True WHERE PizzaOrderNum=%d;", o.getOrderID()));
 		os.executeUpdate();
@@ -375,16 +407,16 @@ public final class DBNinja {
 
 				Order order;
 				switch (orderType) {
-					case "DineIn":
+					case dine_in:
 						int tableNum = rs.getInt("DineInTableNum");
 						order = new DineinOrder(orderNum, 0, orderDateString, cost, price, isComplete, tableNum);
 						break;
-					case "PickUp":
+					case pickup:
 						int pickupCustomerID = rs.getInt("PickupCustomerID");
 						order = new PickupOrder(orderNum, pickupCustomerID, orderDateString, price, cost, isComplete,
 								isComplete);
 						break;
-					case "Delivery":
+					case delivery:
 						int deliveryCustomerID = rs.getInt("DeliveryCustomerID");
 						String customerStreet = rs.getString("CustomerStreet");
 						String customerCity = rs.getString("CustomerCity");

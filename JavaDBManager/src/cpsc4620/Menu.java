@@ -102,24 +102,24 @@ public class Menu {
 		String option = reader.readLine();
 		int order_option = Integer.parseInt(option);
 		String existing_customer = "";
-		Order order = new Order(0, 0, "", "", 0.0, 0.0, 0);
 		int customer = -1;
 		switch (order_option) {
 			case 1:
+
 				System.out.println("What is the table number for this order?");
 				String table_num_string = reader.readLine();
 
 				int table_num = Integer.parseInt(table_num_string);
-				order.setCustID(-1);
 				DineinOrder dinein = new DineinOrder(0, 0, "2024-03-22", 0.0, 0.0, 0, table_num);
-				dinein.setOrderType("dinein");
+				dinein.setOrderType(DBNinja.dine_in);
+				dinein.setCustID(0);
 				DBNinja.addOrder(dinein);
 				break;
 			case 2:
 
 				PickupOrder pickup_order = new PickupOrder(0, 0, "2024-03-22", 0.0, 0.0, 0, 0);
 
-				pickup_order.setOrderType("pickup");
+				pickup_order.setOrderType(DBNinja.pickup);
 				System.out.println("Is this order for an existing customer? Answer y/n: ");
 				existing_customer = reader.readLine();
 				while (existing_customer.toLowerCase().equals("y") == false
@@ -156,6 +156,7 @@ public class Menu {
 				DeliveryOrder new_delivery = new DeliveryOrder(0, 0, "2024-04-21", 0.0, 0.0, 0, "");
 
 				// order.setOrderType("delivery");
+				new_delivery.setOrderType(DBNinja.delivery);
 				System.out.println("Is this order for an existing customer? Answer y/n: ");
 				existing_customer = reader.readLine();
 				while (existing_customer.toLowerCase().equals("y") == false
@@ -203,6 +204,7 @@ public class Menu {
 				}
 				break;
 		}
+		Order order = DBNinja.getLastOrder();
 		System.out.println("Let's build a pizza!");
 		buildPizza(DBNinja.getLastOrder().getOrderID());
 
@@ -220,6 +222,7 @@ public class Menu {
 		}
 
 		System.out.println("Do you want to add discounts to this order? Enter y/n?");
+
 		String add_order_discounts = reader.readLine();
 		if (add_order_discounts.toLowerCase().equals("y")) {
 			ArrayList<Discount> discounts = DBNinja.getDiscountList();
@@ -529,21 +532,20 @@ public class Menu {
 			case 4:
 				ret.setCrustType(DBNinja.crust_gf);
 		}
+		ret.setBusPrice(DBNinja.getBaseBusPrice(ret.getSize(), ret.getCrustType()));
+		ret.setCustPrice(DBNinja.getBaseCustPrice(ret.getSize(), ret.getCrustType()));
 		DBNinja.printInventory();
 		System.out.println("Which topping do you want to add? Enter the TopID. Enter -1 to stop adding toppings: ");
 
 		String topping_string = reader.readLine();
 		int topping = Integer.parseInt(topping_string);
-		double price_increase = DBNinja.getBaseCustPrice(ret.getSize(), ret.getCrustType());
-		double cost_increase = DBNinja.getBaseBusPrice(ret.getSize(), ret.getCrustType());
 		while (topping != -1) {
 
 			for (Topping i : DBNinja.getToppingList()) {
 
 				if (i.getTopID() == topping) {
 					double sizeMax = 0.0;
-					price_increase += i.getCustPrice();
-					cost_increase += i.getBusPrice();
+
 					switch (size) {
 						case 1:
 							sizeMax = i.getPerAMT();
@@ -614,12 +616,7 @@ public class Menu {
 			while (discount != -1) {
 				for (Discount i : discount_list) {
 					if (i.getDiscountID() == discount) {
-						DBNinja.usePizzaDiscount(ret, i);
-						if (i.isPercent()) {
-							price_increase *= (100 - i.getAmount()) / 100.0;
-						} else {
-							price_increase -= i.getAmount();
-						}
+						ret.addDiscounts(i);
 
 					}
 				}
@@ -633,8 +630,7 @@ public class Menu {
 
 			}
 		}
-		ret.setBusPrice(cost_increase);
-		ret.setCustPrice(price_increase);
+
 		ret.setOrderID(orderID);
 		DBNinja.addPizza(ret);
 
