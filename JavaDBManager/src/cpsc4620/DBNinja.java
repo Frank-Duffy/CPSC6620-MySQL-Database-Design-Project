@@ -407,7 +407,7 @@ public final class DBNinja {
 				switch (orderType) {
 					case dine_in:
 						int tableNum = rs.getInt("DineInTableNum");
-						order = new DineinOrder(orderNum, 0, orderDateString, cost, price, isComplete, tableNum);
+						order = new DineinOrder(orderNum, 0, orderDateString, price, cost, isComplete, tableNum);
 						break;
 					case pickup:
 						int pickupCustomerID = rs.getInt("PickupCustomerID");

@@ -368,7 +368,7 @@ public class Menu {
 			return; // or perform any other desired action
 		}
 
-		// Find the specific order and display its details
+		// find the specific order and display details
 		boolean found = false;
 		for (Order order : order_list) {
 			if (order.getOrderID() == orderNumber) {
