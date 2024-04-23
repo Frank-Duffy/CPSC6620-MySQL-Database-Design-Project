@@ -30,9 +30,9 @@ public final class DBNinja {
 
 	// Change these variables to however you record dine-in, pick-up and delivery,
 	// and sizes and crusts
-	public final static String pickup = "pickup";
-	public final static String delivery = "delivery";
-	public final static String dine_in = "dinein";
+	public final static String pickup = "Pickup";
+	public final static String delivery = "Delivery";
+	public final static String dine_in = "DineIn";
 
 	public final static String size_s = "Small";
 	public final static String size_m = "Medium";
