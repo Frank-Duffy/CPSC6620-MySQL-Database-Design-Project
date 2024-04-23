@@ -1,6 +1,8 @@
 package cpsc4620;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -30,7 +32,7 @@ public final class DBNinja {
 
 	// Change these variables to however you record dine-in, pick-up and delivery,
 	// and sizes and crusts
-	public final static String pickup = "Pickup";
+	public final static String pickup = "PickUp";
 	public final static String delivery = "Delivery";
 	public final static String dine_in = "DineIn";
 
@@ -95,7 +97,6 @@ public final class DBNinja {
 					break;
 			}
 			add_bridge.executeUpdate();
-
 		}
 		// Below commented code prints out the order dates, intended to check for
 		// accuracy of insert
@@ -703,7 +704,6 @@ public final class DBNinja {
 			resultSet = preparedStatement.executeQuery();
 
 			// Process the result set and populate Topping objects
-			// Process the result set and populate Topping objects
 			while (resultSet.next()) {
 				int topID = resultSet.getInt("ToppingNum");
 				String topName = resultSet.getString("ToppingName");
@@ -1006,6 +1006,155 @@ public final class DBNinja {
 			}
 			System.out.println(); // New line after each row
 		}
+	}
+
+	public static ArrayList<Pizza> getPizzas(int orderNum) throws SQLException, IOException {
+		/*
+		 *  This function is designed to build an array list of pizzas associated with a particular order number.
+		 *  It facilitates printing the details of orders in the ViewOrders menu option.
+		 */
+
+		ArrayList<Pizza> pizzas = new ArrayList<>();
+		connect_to_db();
+
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		try {
+			// Define SQL query to select pizzas associated with a specific order number
+			String sql = 	" SELECT p.PizzaNum, p.PizzaOrderNum, pb.PizzaBaseSize, " +
+							" pb.PizzaBaseCrust, p.PizzaPrice, p.PizzaCost, " +
+							" p.PizzaIsComplete, o.PizzaOrderDate " +
+							" FROM pizza p " +
+							" JOIN pizzabase pb ON p.PizzaBaseNum = pb.PizzaBaseNum " +
+							" JOIN pizzaorder o ON p.PizzaOrderNum = o.PizzaOrderNum " +
+							" WHERE p.PizzaOrderNum = ?"; //place holder for orderNum
+			
+			// Prepare the statement
+			stmt = conn.prepareStatement(sql);
+
+			// Set the value for the order number placeholder
+			stmt.setInt(1, orderNum);
+
+			// Execute the query
+			rs = stmt.executeQuery();
+
+			// Process the result set
+			while (rs.next()) {
+				int pizzaID = rs.getInt("PizzaNum");
+				String size = rs.getString("PizzaBaseSize");
+				String crustType = rs.getString("PizzaBaseCrust");
+				int orderID = orderNum;
+				String pizzaState = rs.getString("PizzaIsComplete");
+				Timestamp pizzaTimestamp =  rs.getTimestamp("PizzaOrderDate");
+				BigDecimal custPriceBD = rs.getBigDecimal("PizzaPrice").setScale(2, RoundingMode.HALF_UP);;
+				double custPrice = custPriceBD.doubleValue();
+				BigDecimal busPricBD = rs.getBigDecimal("PizzaCost").setScale(2, RoundingMode.HALF_UP);;
+				double busPrice = busPricBD.doubleValue();
+
+				// Convert Date to formatted string
+				String pizzaDateString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(pizzaTimestamp);
+				
+				// Assuming there is a Pizza class with a constructor that takes these parameters
+				// Pizza pizza = new Pizza(pizzaID, pizzaType, pizzaSize);
+				Pizza pizza = new Pizza(pizzaID, size, crustType, orderID, pizzaState, pizzaDateString,
+				custPrice, busPrice);
+
+				pizzas.add(pizza);
+			}
+		} catch (SQLException e) {
+			System.err.println("SQL Exception: " + e.getMessage());
+			throw e;
+		} finally {
+			// Clean up resources
+			if (rs != null) try { rs.close(); } catch (SQLException ex) { ex.printStackTrace(); }
+			if (stmt != null) try { stmt.close(); } catch (SQLException ex) { ex.printStackTrace(); }
+			if (conn != null) try { conn.close(); } catch (SQLException ex) { ex.printStackTrace(); }
+		}
+		return pizzas;
+	}
+
+	public static ArrayList<Discount> getOrderDiscounts(int orderNum) throws SQLException, IOException {
+		/*
+		 * This function helps to display the discounts on an order in ViewOrders menu 
+		 */
+
+		ArrayList<Discount> orderDiscounts = new ArrayList<>();
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		connect_to_db(); 
+	
+		try {
+			String sql = "SELECT d.DiscountNum, d.DiscountName, d.DiscountType, d.DiscountAmt " +
+						 "FROM discount d " +
+						 "JOIN orderdiscount od ON d.DiscountNum = od.OrderDiscountNum " +
+						 "WHERE od.OrderDiscountPizzaOrderNum = ?";
+			
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, orderNum);
+			rs = stmt.executeQuery();
+	
+			while (rs.next()) {
+				int discountID = rs.getInt("DiscountNum");
+				String discountName = rs.getString("DiscountName");
+				String discountType = rs.getString("DiscountType");
+				double discountAmount = rs.getDouble("DiscountAmt");
+				boolean isPercent = discountType.equals("%"); 
+	
+				Discount discount = new Discount(discountID, discountName, discountAmount, isPercent);
+				orderDiscounts.add(discount);
+			}
+		} catch (SQLException e) {
+			System.err.println("SQL Exception: " + e.getMessage());
+			throw e;
+		} finally {
+			if (rs != null) try { rs.close(); } catch (SQLException ex) { }
+			if (stmt != null) try { stmt.close(); } catch (SQLException ex) { }
+			if (conn != null) try { conn.close(); } catch (SQLException ex) { }
+		}
+	
+		return orderDiscounts;
+	}
+
+	public static ArrayList<Discount> getPizzaDiscounts(int pizzaNum) throws SQLException, IOException {
+		/*
+		 * This function helps to display the discounts on a pizza in the ViewOrders menu 
+		 */
+
+		ArrayList<Discount> pizzaDiscounts = new ArrayList<>();
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		connect_to_db(); 
+	
+		try {
+			String sql = "SELECT d.DiscountNum, d.DiscountName, d.DiscountType, d.DiscountAmt " +
+						 "FROM discount d " +
+						 "JOIN pizzadiscount pd ON d.DiscountNum = pd.PizzaDiscountNum " +
+						 "WHERE pd.PizzaDiscountPizzaNum = ?";
+			
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, pizzaNum);
+			rs = stmt.executeQuery();
+	
+			while (rs.next()) {
+				int discountID = rs.getInt("DiscountNum");
+				String discountName = rs.getString("DiscountName");
+				String discountType = rs.getString("DiscountType");
+				double discountAmount = rs.getDouble("DiscountAmt");
+				boolean isPercent = discountType.equals("%"); 
+	
+				Discount discount = new Discount(discountID, discountName, discountAmount, isPercent);
+				pizzaDiscounts.add(discount);
+			}
+		} catch (SQLException e) {
+			System.err.println("SQL Exception: " + e.getMessage());
+			throw e;
+		} finally {
+			if (rs != null) try { rs.close(); } catch (SQLException ex) { }
+			if (stmt != null) try { stmt.close(); } catch (SQLException ex) { }
+			if (conn != null) try { conn.close(); } catch (SQLException ex) { }
+		}
+	
+		return pizzaDiscounts;
 	}
 
 	/*

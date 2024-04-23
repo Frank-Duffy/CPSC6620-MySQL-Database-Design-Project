@@ -350,8 +350,8 @@ public class Menu {
 			default:
 				System.out.println("I don't understand that input, returning to menu");
 				return;
-
 		}
+
 		if (order_list == null) {
 			System.out.println("No orders to display, returning to menu.");
 			return;
@@ -375,7 +375,7 @@ public class Menu {
 				System.out.println("Order Details:");
 				System.out.println(order.toString());
 				found = true;
-				break;
+				continue;
 			}
 		}
 
@@ -383,6 +383,32 @@ public class Menu {
 			System.out.println("Order not found.");
 			return;
 		}
+
+		//print the order discount details
+		ArrayList<Discount> orderDiscounts = DBNinja.getOrderDiscounts(orderNumber);
+		if (orderDiscounts.isEmpty()) {
+			System.out.println("NO ORDER DISCOUNTS");
+		} else {
+			// get discount names and make a string
+			StringBuilder discountNames = new StringBuilder();
+			for (Discount discount : orderDiscounts) {
+				discountNames.append(discount.getDiscountName()).append(", ");
+			}
+		
+			// remove trailing comma and space
+			String discountNamesString = discountNames.substring(0, discountNames.length() - 2);
+			System.out.println("ORDER DISCOUNTS: " + discountNamesString);
+		}
+
+
+		//print the pizza details
+		ArrayList<Pizza> pizzas = DBNinja.getPizzas(orderNumber);
+		for(Pizza pizza : pizzas) {
+			System.out.println(pizza);
+			ArrayList<Discount> pizzaDiscounts = DBNinja.getPizzaDiscounts(pizza.getPizzaID());
+			printPizzaDiscounts(pizzaDiscounts);
+		}
+
 		return;
 		// System.out.println("What is the date you want to restrict by? (FORMAT=
 		// YYYY-MM-DD)");
@@ -683,6 +709,21 @@ public class Menu {
 		}
 	}
 
+	public static void printPizzaDiscounts(ArrayList<Discount> pizzaDiscounts) {
+		if (pizzaDiscounts.isEmpty()) {
+			System.out.println("NO PIZZA DISCOUNTS");
+			return;
+		}
+	
+		StringBuilder discountNames = new StringBuilder();
+		for (Discount discount : pizzaDiscounts) {
+			discountNames.append(discount.getDiscountName()).append(", ");
+		}
+	
+		// Remove the trailing comma and space
+		String discountNamesString = discountNames.substring(0, discountNames.length() - 2);
+		System.out.println("PIZZA DISCOUNTS: " + discountNamesString);
+	}
 	// Prompt - NO CODE SHOULD TAKE PLACE BELOW THIS LINE
 	// DO NOT EDIT ANYTHING BELOW HERE, THIS IS NEEDED TESTING.
 	// IF YOU EDIT SOMETHING BELOW, IT BREAKS THE AUTOGRADER WHICH MEANS YOUR GRADE
