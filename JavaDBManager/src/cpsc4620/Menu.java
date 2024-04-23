@@ -532,12 +532,16 @@ public class Menu {
 		switch (size) {
 			case 1:
 				ret.setSize(DBNinja.size_s);
+				break;
 			case 2:
 				ret.setSize(DBNinja.size_m);
+				break;
 			case 3:
 				ret.setSize(DBNinja.size_l);
+				break;
 			case 4:
 				ret.setSize(DBNinja.size_xl);
+				break;
 		}
 		System.out.println("What crust for this pizza?");
 		System.out.println("1." + DBNinja.crust_thin);
