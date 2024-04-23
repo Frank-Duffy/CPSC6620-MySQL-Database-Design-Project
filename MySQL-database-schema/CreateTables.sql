@@ -88,7 +88,7 @@ CREATE TABLE topping(
     ToppingLarge	DECIMAL(3,2)	NOT NULL,
     ToppingXLarge	DECIMAL(3,2)	NOT NULL,
     ToppingMinQOH   DECIMAL(8,2)    NOT NULL,
-    ToppingQOH      DECIMAL(8,2)    NOT NULL
+    ToppingQOH      DECIMAL(10,2)    NOT NULL
 );
 CREATE TABLE pizzatopping(
 	PizzaToppingPizzaNum	INT	NOT NULL,
