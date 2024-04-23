@@ -554,12 +554,16 @@ public class Menu {
 		switch (crust) {
 			case 1:
 				ret.setCrustType(DBNinja.crust_thin);
+				break;
 			case 2:
 				ret.setCrustType(DBNinja.crust_orig);
+				break;
 			case 3:
 				ret.setCrustType(DBNinja.crust_pan);
+				break;
 			case 4:
 				ret.setCrustType(DBNinja.crust_gf);
+				break;
 		}
 		ret.setBusPrice(DBNinja.getBaseBusPrice(ret.getSize(), ret.getCrustType()));
 		ret.setCustPrice(DBNinja.getBaseCustPrice(ret.getSize(), ret.getCrustType()));
