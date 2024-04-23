@@ -168,8 +168,8 @@ public class Menu {
 					System.out.println("Here's a list of the current customers: ");
 					viewCustomers();
 					System.out.println("Which customer is this order for? Enter ID Number:");
-					String customer_string = reader.readLine();
-					customer = Integer.parseInt(option);
+					String targetCustomerID = reader.readLine();
+					customer = Integer.parseInt(targetCustomerID);
 					ArrayList<Customer> customer_list = DBNinja.getCustomerList();
 					for (Customer i : customer_list) {
 						if (i.getCustID() == customer) {
@@ -754,6 +754,7 @@ public class Menu {
 		String discountNamesString = discountNames.substring(0, discountNames.length() - 2);
 		System.out.println("PIZZA DISCOUNTS: " + discountNamesString);
 	}
+	
 	// Prompt - NO CODE SHOULD TAKE PLACE BELOW THIS LINE
 	// DO NOT EDIT ANYTHING BELOW HERE, THIS IS NEEDED TESTING.
 	// IF YOU EDIT SOMETHING BELOW, IT BREAKS THE AUTOGRADER WHICH MEANS YOUR GRADE

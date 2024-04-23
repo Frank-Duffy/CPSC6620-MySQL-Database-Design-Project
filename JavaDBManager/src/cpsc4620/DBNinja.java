@@ -308,11 +308,23 @@ public final class DBNinja {
 
 	public static void updateCustomer(Customer c, int custID) throws SQLException, IOException {
 		connect_to_db();
-		PreparedStatement os = conn
-				.prepareStatement(
-						"UPDATE customer SET CustomerStreet=? WHERE CustomerID=?;");
-		os.setString(1, c.getAddress());
-		os.setInt(2, custID);
+		PreparedStatement os = conn.prepareStatement(
+			"UPDATE customer SET CustomerStreet=?, CustomerCity=?, CustomerState=?, CustomerZip=? WHERE CustomerID=?;"
+		);
+
+		String[] splitAddress = c.getAddress().split("/n");
+
+		String street = splitAddress[0];
+		String city = splitAddress[1];
+		String state = splitAddress[2];
+		String zip = splitAddress[3];
+
+		// Set parameters based on the split address
+		os.setString(1, street);
+		os.setString(2, city);
+		os.setString(3, state);
+		os.setString(4, zip);
+		os.setInt(5, custID);
 
 		os.executeUpdate();
 		conn.close();
