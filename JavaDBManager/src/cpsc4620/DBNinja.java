@@ -74,7 +74,6 @@ public final class DBNinja {
 		os.setString(2, o.getOrderType());
 		os.executeUpdate();
 
-		os.executeUpdate();
 		ResultSet generated_keys = os.getGeneratedKeys();
 		if (generated_keys.next()) {
 			int order_id = (int) generated_keys.getLong(1);
@@ -1010,8 +1009,9 @@ public final class DBNinja {
 
 	public static ArrayList<Pizza> getPizzas(int orderNum) throws SQLException, IOException {
 		/*
-		 *  This function is designed to build an array list of pizzas associated with a particular order number.
-		 *  It facilitates printing the details of orders in the ViewOrders menu option.
+		 * This function is designed to build an array list of pizzas associated with a
+		 * particular order number.
+		 * It facilitates printing the details of orders in the ViewOrders menu option.
 		 */
 
 		ArrayList<Pizza> pizzas = new ArrayList<>();
@@ -1021,14 +1021,14 @@ public final class DBNinja {
 		ResultSet rs = null;
 		try {
 			// Define SQL query to select pizzas associated with a specific order number
-			String sql = 	" SELECT p.PizzaNum, p.PizzaOrderNum, pb.PizzaBaseSize, " +
-							" pb.PizzaBaseCrust, p.PizzaPrice, p.PizzaCost, " +
-							" p.PizzaIsComplete, o.PizzaOrderDate " +
-							" FROM pizza p " +
-							" JOIN pizzabase pb ON p.PizzaBaseNum = pb.PizzaBaseNum " +
-							" JOIN pizzaorder o ON p.PizzaOrderNum = o.PizzaOrderNum " +
-							" WHERE p.PizzaOrderNum = ?"; //place holder for orderNum
-			
+			String sql = " SELECT p.PizzaNum, p.PizzaOrderNum, pb.PizzaBaseSize, " +
+					" pb.PizzaBaseCrust, p.PizzaPrice, p.PizzaCost, " +
+					" p.PizzaIsComplete, o.PizzaOrderDate " +
+					" FROM pizza p " +
+					" JOIN pizzabase pb ON p.PizzaBaseNum = pb.PizzaBaseNum " +
+					" JOIN pizzaorder o ON p.PizzaOrderNum = o.PizzaOrderNum " +
+					" WHERE p.PizzaOrderNum = ?"; // place holder for orderNum
+
 			// Prepare the statement
 			stmt = conn.prepareStatement(sql);
 
@@ -1045,19 +1045,22 @@ public final class DBNinja {
 				String crustType = rs.getString("PizzaBaseCrust");
 				int orderID = orderNum;
 				String pizzaState = rs.getString("PizzaIsComplete");
-				Timestamp pizzaTimestamp =  rs.getTimestamp("PizzaOrderDate");
-				BigDecimal custPriceBD = rs.getBigDecimal("PizzaPrice").setScale(2, RoundingMode.HALF_UP);;
+				Timestamp pizzaTimestamp = rs.getTimestamp("PizzaOrderDate");
+				BigDecimal custPriceBD = rs.getBigDecimal("PizzaPrice").setScale(2, RoundingMode.HALF_UP);
+				;
 				double custPrice = custPriceBD.doubleValue();
-				BigDecimal busPricBD = rs.getBigDecimal("PizzaCost").setScale(2, RoundingMode.HALF_UP);;
+				BigDecimal busPricBD = rs.getBigDecimal("PizzaCost").setScale(2, RoundingMode.HALF_UP);
+				;
 				double busPrice = busPricBD.doubleValue();
 
 				// Convert Date to formatted string
 				String pizzaDateString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(pizzaTimestamp);
-				
-				// Assuming there is a Pizza class with a constructor that takes these parameters
+
+				// Assuming there is a Pizza class with a constructor that takes these
+				// parameters
 				// Pizza pizza = new Pizza(pizzaID, pizzaType, pizzaSize);
 				Pizza pizza = new Pizza(pizzaID, size, crustType, orderID, pizzaState, pizzaDateString,
-				custPrice, busPrice);
+						custPrice, busPrice);
 
 				pizzas.add(pizza);
 			}
@@ -1066,40 +1069,55 @@ public final class DBNinja {
 			throw e;
 		} finally {
 			// Clean up resources
-			if (rs != null) try { rs.close(); } catch (SQLException ex) { ex.printStackTrace(); }
-			if (stmt != null) try { stmt.close(); } catch (SQLException ex) { ex.printStackTrace(); }
-			if (conn != null) try { conn.close(); } catch (SQLException ex) { ex.printStackTrace(); }
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+			if (stmt != null)
+				try {
+					stmt.close();
+				} catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException ex) {
+					ex.printStackTrace();
+				}
 		}
 		return pizzas;
 	}
 
 	public static ArrayList<Discount> getOrderDiscounts(int orderNum) throws SQLException, IOException {
 		/*
-		 * This function helps to display the discounts on an order in ViewOrders menu 
+		 * This function helps to display the discounts on an order in ViewOrders menu
 		 */
 
 		ArrayList<Discount> orderDiscounts = new ArrayList<>();
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
-		connect_to_db(); 
-	
+		connect_to_db();
+
 		try {
 			String sql = "SELECT d.DiscountNum, d.DiscountName, d.DiscountType, d.DiscountAmt " +
-						 "FROM discount d " +
-						 "JOIN orderdiscount od ON d.DiscountNum = od.OrderDiscountNum " +
-						 "WHERE od.OrderDiscountPizzaOrderNum = ?";
-			
+					"FROM discount d " +
+					"JOIN orderdiscount od ON d.DiscountNum = od.OrderDiscountNum " +
+					"WHERE od.OrderDiscountPizzaOrderNum = ?";
+
 			stmt = conn.prepareStatement(sql);
 			stmt.setInt(1, orderNum);
 			rs = stmt.executeQuery();
-	
+
 			while (rs.next()) {
 				int discountID = rs.getInt("DiscountNum");
 				String discountName = rs.getString("DiscountName");
 				String discountType = rs.getString("DiscountType");
 				double discountAmount = rs.getDouble("DiscountAmt");
-				boolean isPercent = discountType.equals("%"); 
-	
+				boolean isPercent = discountType.equals("%");
+
 				Discount discount = new Discount(discountID, discountName, discountAmount, isPercent);
 				orderDiscounts.add(discount);
 			}
@@ -1107,41 +1125,54 @@ public final class DBNinja {
 			System.err.println("SQL Exception: " + e.getMessage());
 			throw e;
 		} finally {
-			if (rs != null) try { rs.close(); } catch (SQLException ex) { }
-			if (stmt != null) try { stmt.close(); } catch (SQLException ex) { }
-			if (conn != null) try { conn.close(); } catch (SQLException ex) { }
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException ex) {
+				}
+			if (stmt != null)
+				try {
+					stmt.close();
+				} catch (SQLException ex) {
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException ex) {
+				}
 		}
-	
+
 		return orderDiscounts;
 	}
 
 	public static ArrayList<Discount> getPizzaDiscounts(int pizzaNum) throws SQLException, IOException {
 		/*
-		 * This function helps to display the discounts on a pizza in the ViewOrders menu 
+		 * This function helps to display the discounts on a pizza in the ViewOrders
+		 * menu
 		 */
 
 		ArrayList<Discount> pizzaDiscounts = new ArrayList<>();
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
-		connect_to_db(); 
-	
+		connect_to_db();
+
 		try {
 			String sql = "SELECT d.DiscountNum, d.DiscountName, d.DiscountType, d.DiscountAmt " +
-						 "FROM discount d " +
-						 "JOIN pizzadiscount pd ON d.DiscountNum = pd.PizzaDiscountNum " +
-						 "WHERE pd.PizzaDiscountPizzaNum = ?";
-			
+					"FROM discount d " +
+					"JOIN pizzadiscount pd ON d.DiscountNum = pd.PizzaDiscountNum " +
+					"WHERE pd.PizzaDiscountPizzaNum = ?";
+
 			stmt = conn.prepareStatement(sql);
 			stmt.setInt(1, pizzaNum);
 			rs = stmt.executeQuery();
-	
+
 			while (rs.next()) {
 				int discountID = rs.getInt("DiscountNum");
 				String discountName = rs.getString("DiscountName");
 				String discountType = rs.getString("DiscountType");
 				double discountAmount = rs.getDouble("DiscountAmt");
-				boolean isPercent = discountType.equals("%"); 
-	
+				boolean isPercent = discountType.equals("%");
+
 				Discount discount = new Discount(discountID, discountName, discountAmount, isPercent);
 				pizzaDiscounts.add(discount);
 			}
@@ -1149,11 +1180,23 @@ public final class DBNinja {
 			System.err.println("SQL Exception: " + e.getMessage());
 			throw e;
 		} finally {
-			if (rs != null) try { rs.close(); } catch (SQLException ex) { }
-			if (stmt != null) try { stmt.close(); } catch (SQLException ex) { }
-			if (conn != null) try { conn.close(); } catch (SQLException ex) { }
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException ex) {
+				}
+			if (stmt != null)
+				try {
+					stmt.close();
+				} catch (SQLException ex) {
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException ex) {
+				}
 		}
-	
+
 		return pizzaDiscounts;
 	}
 
