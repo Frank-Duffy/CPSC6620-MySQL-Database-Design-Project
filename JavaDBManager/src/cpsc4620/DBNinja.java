@@ -95,7 +95,6 @@ public final class DBNinja {
 					break;
 			}
 			add_bridge.executeUpdate();
-
 		}
 		// Below commented code prints out the order dates, intended to check for
 		// accuracy of insert
@@ -705,7 +704,6 @@ public final class DBNinja {
 			resultSet = preparedStatement.executeQuery();
 
 			// Process the result set and populate Topping objects
-			// Process the result set and populate Topping objects
 			while (resultSet.next()) {
 				int topID = resultSet.getInt("ToppingNum");
 				String topName = resultSet.getString("ToppingName");
@@ -1008,6 +1006,69 @@ public final class DBNinja {
 			}
 			System.out.println(); // New line after each row
 		}
+	}
+
+	public static ArrayList<Pizza> getPizzas(int orderNum) throws SQLException, IOException {
+		/*
+		 *  This function is designed to build an array list of pizzas associated with a particular order number.
+		 *  It facilitates printing the details of orders in the ViewOrders menu option.
+		 */
+
+		ArrayList<Pizza> pizzas = new ArrayList<>();
+		connect_to_db();
+
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		try {
+			// Define SQL query to select pizzas associated with a specific order number
+			String sql = 	" SELECT p.PizzaNum, p.PizzaOrderNum, pb.PizzaBaseSize, " +
+							" pb.PizzaBaseCrust, p.PizzaPrice, p.PizzaCost, " +
+							" p.PizzaIsComplete, o.PizzaOrderDate " +
+							" FROM pizza p " +
+							" JOIN pizzabase pb ON p.PizzaBaseNum = pb.PizzaBaseNum " +
+							" JOIN pizzaorder o ON p.PizzaOrderNum = o.PizzaOrderNum " +
+							" WHERE p.PizzaOrderNum = ?"; //place holder for orderNum
+			
+			// Prepare the statement
+			stmt = conn.prepareStatement(sql);
+
+			// Set the value for the order number placeholder
+			stmt.setInt(1, orderNum);
+
+			// Execute the query
+			rs = stmt.executeQuery();
+
+			// Process the result set
+			while (rs.next()) {
+				int pizzaID = rs.getInt("PizzaNum");
+				String size = rs.getString("PizzaBaseSize");
+				String crustType = rs.getString("PizzaBaseCrust");
+				int orderID = orderNum;
+				String pizzaState = rs.getString("PizzaIsComplete");
+				Timestamp pizzaTimestamp =  rs.getTimestamp("PizzaOrderDate");
+				double custPrice = rs.getFloat("PizzaPrice");
+				double busPrice = rs.getFloat("PizzaCost");
+
+				// Convert Date to formatted string
+				String pizzaDateString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(pizzaTimestamp);
+				
+				// Assuming there is a Pizza class with a constructor that takes these parameters
+				// Pizza pizza = new Pizza(pizzaID, pizzaType, pizzaSize);
+				Pizza pizza = new Pizza(pizzaID, size, crustType, orderID, pizzaState, pizzaDateString,
+				custPrice, busPrice);
+
+				pizzas.add(pizza);
+			}
+		} catch (SQLException e) {
+			System.err.println("SQL Exception: " + e.getMessage());
+			throw e;
+		} finally {
+			// Clean up resources
+			if (rs != null) try { rs.close(); } catch (SQLException ex) { ex.printStackTrace(); }
+			if (stmt != null) try { stmt.close(); } catch (SQLException ex) { ex.printStackTrace(); }
+			if (conn != null) try { conn.close(); } catch (SQLException ex) { ex.printStackTrace(); }
+		}
+		return pizzas;
 	}
 
 	/*

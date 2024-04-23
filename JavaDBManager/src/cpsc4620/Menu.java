@@ -351,8 +351,8 @@ public class Menu {
 			default:
 				System.out.println("I don't understand that input, returning to menu");
 				return;
-
 		}
+		
 		if (order_list == null) {
 			System.out.println("No orders to display, returning to menu.");
 			return;
