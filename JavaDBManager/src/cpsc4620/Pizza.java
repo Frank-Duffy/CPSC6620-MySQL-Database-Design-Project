@@ -1,5 +1,6 @@
 package cpsc4620;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Pizza 
 {
@@ -156,6 +157,11 @@ public class Pizza
 		{
 			this.BusPrice += t.getBusPrice()*2;
 			this.CustPrice += t.getCustPrice()*2;
+
+			// get topping index and set to true in isToppingDoubled.
+			int toppingCount = Toppings.size();
+			isToppingDoubled[toppingCount - 1] = true;
+
 		}
 		else
 		{

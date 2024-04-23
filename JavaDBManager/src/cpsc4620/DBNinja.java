@@ -153,9 +153,11 @@ public final class DBNinja {
 		if (generated_keys.next()) {
 			long pizza_id = generated_keys.getLong(1);
 			p.setPizzaID((int) pizza_id);
+			int getToppingsIndex = 0;
 			for (Topping i : p.getToppings()) {
-				useTopping(p, i, false);
-
+				boolean hasExtra = p.getIsDoubleArray()[getToppingsIndex];
+				useTopping(p, i, hasExtra);
+				getToppingsIndex++;
 			}
 			for (Discount i : p.getDiscounts()) {
 				usePizzaDiscount(p, i);

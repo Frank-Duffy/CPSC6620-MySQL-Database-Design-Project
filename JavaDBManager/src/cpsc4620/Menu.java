@@ -639,7 +639,7 @@ public class Menu {
 					// break;
 					// }
 
-					if (extra_string.toLowerCase() == "y") {
+					if ("y".equals(extra_string.toLowerCase())) {
 						ret.addToppings(i, true);
 					} else {
 						ret.addToppings(i, false);
